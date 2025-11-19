@@ -3,3 +3,4 @@ Flask-SQLAlchemy==3.1.1
 flask-cors==6.0.1
 dotenv==0.9.9
 mysqlclient==2.2.7
+flask-jwt-extended==4.7.1
