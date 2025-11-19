@@ -44,7 +44,7 @@ export async function loginUser(login: string, password: string) {
     },
     body: JSON.stringify({ user_name: login, password: password }),
   });
-  return response.json();
+  return response;
 }
 
 export async function registerUser(login: string, password: string) {
@@ -55,5 +55,5 @@ export async function registerUser(login: string, password: string) {
     },
     body: JSON.stringify({ user_name: login, password: password }),
   });
-  return response.json();
+  return response;
 }

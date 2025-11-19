@@ -10,8 +10,10 @@ import { createCookie } from "../app/actions";
 
 const login = async (login: string, password: string) => {
   const response = await loginUser(login, password);
-  if (response.status === "SUCCESS") {
-    await createCookie("access_token", response.access_token);
+  if (response.status === 200) {
+    const jsonData = await response.json();
+
+    await createCookie("access_token", jsonData.access_token);
 
     return true;
   }
@@ -20,7 +22,7 @@ const login = async (login: string, password: string) => {
 
 export default function Page() {
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = useState<String>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -48,6 +50,7 @@ export default function Page() {
             placeholder="Wpisz swoje hasło..."
             value={password}
             setValue={setPassword}
+            error={errorMessage}
             isPassword
           />
           {errorMessage}

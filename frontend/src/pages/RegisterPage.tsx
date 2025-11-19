@@ -10,8 +10,9 @@ import { createCookie } from "../app/actions";
 
 const register = async (login: string, password: string) => {
   const response = await registerUser(login, password);
-  if (response.status === "SUCCESS") {
-    await createCookie("access_token", response.access_token);
+  if (response.status === 201) {
+    const jsonData = await response.json();
+    await createCookie("access_token", jsonData.access_token);
 
     return true;
   }
