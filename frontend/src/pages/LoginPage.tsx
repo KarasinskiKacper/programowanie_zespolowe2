@@ -2,29 +2,27 @@
 import Button from "@/components/Button";
 import Logo from "@/components/Logo";
 import TextInput from "@/components/TextInput";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { test } from "../auth/lib";
-import { log } from "console";
+import { loginUser } from "../auth/lib";
+import { createCookie } from "../app/actions";
+
+const login = async (login: string, password: string) => {
+  const response = await loginUser(login, password);
+  if (response.status === "SUCCESS") {
+    await createCookie("access_token", response.access_token);
+
+    return true;
+  }
+  return false;
+};
 
 export default function Page() {
   const router = useRouter();
-  const [login, setLogin] = useState("");
+  const [errorMessage, setErrorMessage] = useState<String>("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [fetchedData, setFetchedData] = useState(null);
-
-  // useEffect(() => {
-  //   if (!fetchedData) {
-  //     const fetchData = async () => {
-  //       const users = await test();
-  //       if (users) {
-  //         setFetchedData(users);
-  //       }
-  //     };
-  //     fetchData();
-  //   }
-  // }, []);
 
   return (
     <div className="min-h-screen justify-between items-center overflow-hidden">
@@ -42,8 +40,8 @@ export default function Page() {
           <TextInput
             label="Login"
             placeholder="Wpisz swój login..."
-            value={login}
-            setValue={setLogin}
+            value={username}
+            setValue={setUsername}
           />
           <TextInput
             label="Hasło"
@@ -52,11 +50,21 @@ export default function Page() {
             setValue={setPassword}
             isPassword
           />
+          {errorMessage}
         </div>
         <Button
           label="Zaloguj się"
-          onClick={() => {
-            router.push("/dashboard");
+          onClick={async () => {
+            if (!username) {
+              setErrorMessage("Podaj login");
+            } else if (!password) {
+              setErrorMessage("Podaj hasło");
+            } else if (!(await login(username, password))) {
+              setErrorMessage("Błędny login lub hasło");
+            } else {
+              setErrorMessage("");
+              router.push("/dashboard");
+            }
           }}
         />
         <div className="self-stretch inline-flex justify-center items-center gap-4">
