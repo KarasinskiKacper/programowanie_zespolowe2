@@ -11,16 +11,16 @@ def register():
     password = data.get("password")
 
     if not username or not password:
-        return jsonify(status = "Missing Login or password"), 420
+        return jsonify(error = "Missing Login or password"), 400
 
     if Users.query.filter_by(user_name=username).first():
-        return jsonify(status="USER_EXISTS"), 409
+        return jsonify(error = "User Exists"), 409
 
     new_user = Users(user_name=username, password=password)
     db.session.add(new_user)
     db.session.commit()
     token = create_access_token(identity=username)
-    return jsonify({"access_token": token}), 200
+    return jsonify({"access_token": token}), 201
 
 @bp.route("/login", methods=['POST'])
 def login():
@@ -29,12 +29,12 @@ def login():
     password = data.get("password")
 
     if not username or not password:
-        return jsonify(status = "Missing Login or password"), 420
+        return jsonify(error = "Missing Login or password"), 400
 
     user = Users.query.filter_by(user_name=username).first()
 
     if user and user.password == password:
         token = create_access_token(identity=username)
-        return jsonify({"access_token": token}), 200
+        return jsonify({"access_token": token})
     else:
-        return jsonify(status="USER_DOESNT_EXISTS"), 409
+        return jsonify(error = "Invalid user credentials"), 401
