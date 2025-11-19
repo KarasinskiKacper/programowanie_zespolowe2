@@ -2,12 +2,14 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from db_objects import Users, db
 
 
 def create_app():
     load_dotenv()
     app = Flask(__name__)
+    CORS(app) # Enable CORS for next.js
 
     # TODO add dotenv detection and verification, throw error if not found or invalid
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqldb://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}'
@@ -31,4 +33,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000) # enable access from any IP
