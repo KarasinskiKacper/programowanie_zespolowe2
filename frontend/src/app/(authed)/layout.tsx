@@ -2,11 +2,12 @@
 import Icon from "@/components/Icon";
 import Logo from "@/components/Logo";
 
-import { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useRooms } from "../../components/context/RoomContext";
 
 import { getCookie, deleteCookie } from "../actions";
-import { getPublicRooms } from "../../auth/lib";
 
 import jwt from "jsonwebtoken";
 
@@ -21,8 +22,9 @@ export default function RootLayout({
 }>) {
   const router = useRouter();
   const [accessToken, setAccessToken] = useState<string>("");
-  const [rooms, setRooms] = useState<Object[]>([]);
-  const [chosenRoom, setChosenRoom] = useState<number | null>(null);
+  // const [rooms, setRooms] = useState<Object[]>([]);
+  // const [chosenRoom, setChosenRoom] = useState<number | null>(null);
+  const { rooms, setRooms, chosenRoom, setChosenRoom } = useRooms();
 
   useEffect(() => {
     const fetchCookie = async () => {
@@ -34,24 +36,7 @@ export default function RootLayout({
         console.log("username:", jwt.decode(cookie).sub);
       }
     };
-
-    const fetchData = async () => {
-      if (rooms.length === 0) {
-        const fetchedRooms = await getPublicRooms();
-        let resultRooms: Object[] = [];
-
-        fetchedRooms.forEach((room) => {
-          resultRooms.push({ name: room.room_name, id: room.room_id });
-        });
-        setRooms(resultRooms);
-        if (resultRooms.length > 0) {
-          setChosenRoom(resultRooms[0].id);
-        }
-      }
-    };
-
     fetchCookie();
-    fetchData();
   }, []);
 
   return (

@@ -2,11 +2,13 @@
 import Button from "@/components/Button";
 import Icon from "@/components/Icon";
 import TextInput from "@/components/TextInput";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useRooms } from "../components/context/RoomContext";
 
 import { getCookie } from "../app/actions";
-import { getPublicRooms, getChatMessages, getChatMembers } from "../auth/lib";
+import { getChatMessages, getChatMembers } from "../auth/lib";
 import jwt from "jsonwebtoken";
 
 const fetchChatMessages = async (roomId: number) => {
@@ -20,8 +22,7 @@ export default function Page() {
   const [workspace, setWorkspace] = useState<string>("ROOM_CHAT");
   const [rightAside, setRightAside] = useState<string>("ROOM_USERS");
 
-  const [rooms, setRooms] = useState<Object[]>([]); // TODO change to rooms passed from layout
-  const [chosenRoom, setChosenRoom] = useState<number | null>(null); // TODO change to chosenRoom passed from layout
+  const { rooms, setRooms, chosenRoom, setChosenRoom } = useRooms();
 
   const [accessToken, setAccessToken] = useState<string>("");
   const [messages, setMessages] = useState<Object[]>([]);
@@ -34,26 +35,12 @@ export default function Page() {
         router.push("/logowanie");
       } else {
         setAccessToken(cookie);
-        console.log("username:", jwt.decode(cookie).sub);
       }
     };
     fetchCookie();
 
     const fetchData = async () => {
-      if (rooms.length === 0) {
-        const fetchedRooms = await getPublicRooms();
-        let resultRooms: Object[] = [];
-
-        fetchedRooms.forEach((room) => {
-          resultRooms.push({ name: room.room_name, id: room.room_id });
-        });
-        setRooms(resultRooms);
-        if (resultRooms.length > 0) {
-          setChosenRoom(resultRooms[0].id);
-        }
-      }
-
-      if (chosenRoom !== null) {
+      if (chosenRoom !== null && chosenRoom !== undefined) {
         const fetchedMessages = await fetchChatMessages(chosenRoom);
         const fetchedMembers = await getChatMembers(chosenRoom);
 
@@ -168,7 +155,7 @@ const LeftAside = ({
               Pokoje publiczne
             </div>
             <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
-              {payload.rooms.map((room) => (
+              {payload.rooms?.map((room) => (
                 <RoomItem
                   key={room.name}
                   name={room.name}
