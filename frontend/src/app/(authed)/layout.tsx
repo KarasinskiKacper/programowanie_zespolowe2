@@ -9,6 +9,8 @@ import { useRooms } from "../../components/context/RoomContext";
 
 import { getCookie, deleteCookie } from "../actions";
 
+import { getPublicRooms } from "../../auth/lib";
+
 import jwt from "jsonwebtoken";
 
 const logout = async () => {
@@ -33,10 +35,22 @@ export default function RootLayout({
         router.push("/logowanie");
       } else {
         setAccessToken(cookie);
-        console.log("username:", jwt.decode(cookie).sub);
       }
     };
     fetchCookie();
+
+    const fetchData = async () => {
+      if (rooms.length === 0) {
+        const fetchedRooms = await getPublicRooms();
+        let resultRooms: Object[] = [];
+
+        fetchedRooms.forEach((room) => {
+          resultRooms.push({ name: room.room_name, id: room.room_id });
+        });
+        setRooms(resultRooms);
+      }
+    };
+    fetchData();
   }, []);
 
   return (
@@ -60,6 +74,8 @@ export default function RootLayout({
             <div
               className="w-24 h-24 inline-flex justify-center items-center gap-2.5"
               onClick={() => {
+                setChosenRoom(null);
+                setRooms([]);
                 logout();
                 router.push("/logowanie");
               }}

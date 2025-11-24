@@ -6,6 +6,7 @@ import TextInput from "@/components/TextInput";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useRooms } from "../components/context/RoomContext";
+import { socket } from "../socket";
 
 import { getCookie } from "../app/actions";
 import { getChatMessages, getChatMembers } from "../auth/lib";
@@ -24,117 +25,151 @@ export default function Page() {
 
   const { rooms, setRooms, chosenRoom, setChosenRoom } = useRooms();
 
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+
   const [accessToken, setAccessToken] = useState<string>("");
+  const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<Object[]>([]);
   const [members, setMembers] = useState<Object[]>([]);
 
+  const fetchCookie = async () => {
+    const cookie = await getCookie("access_token");
+    if (!cookie) {
+      router.push("/logowanie");
+    } else {
+      setAccessToken(cookie);
+    }
+  };
+
+  const fetchData = async () => {
+    if (chosenRoom !== null && chosenRoom !== undefined) {
+      const fetchedMessages = await fetchChatMessages(chosenRoom);
+      const fetchedMembers = await getChatMembers(chosenRoom);
+
+      let resultMessages: Object[] = [];
+      fetchedMessages.forEach((fetchedMessage) => {
+        const dateTime = new Date(fetchedMessage.create_date);
+        const formattedDate = new Intl.DateTimeFormat("pl-PL", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        }).format(dateTime);
+
+        const formattedTime = new Intl.DateTimeFormat("pl-PL", {
+          hour: "numeric",
+          minute: "numeric",
+        }).format(dateTime);
+
+        resultMessages.push({
+          author: fetchedMessage.user_name,
+          content: fetchedMessage.message,
+          date: `${formattedDate}`,
+          time: `${formattedTime}`,
+        });
+      });
+
+      let resultMembers: Object[] = [];
+      fetchedMembers.forEach((fetchedMember) => {
+        resultMembers.push({
+          username: fetchedMember.user_name,
+        });
+      });
+
+      setMessages(resultMessages);
+      setMembers(resultMembers);
+    }
+  };
+
+  const onConnect = () => {
+    setIsConnected(true);
+  };
+
+  const onDisconnect = () => {
+    setIsConnected(false);
+  };
+
+  const joinRoom = (room_id: number) => {
+    const user_name = jwt.decode(accessToken).sub;
+    if (chosenRoom !== null && chosenRoom !== room_id) {
+      socket.emit("leave", { room_id, user_name });
+      console.log("asd");
+    }
+
+    setChosenRoom(room_id);
+    socket.emit("join", { room_id, user_name });
+  };
+
+  const sendMessage = () => {
+    if (chosenRoom === null || isConnected === false || newMessage === "") return;
+    const user_name = jwt.decode(accessToken).sub;
+    socket.emit("message", { room_id: chosenRoom, user_name, message: newMessage });
+    setNewMessage("");
+  };
+
+  const onNewMessage = (fetchedMessage) => {
+    console.log(fetchedMessage);
+
+    const dateTime = new Date(fetchedMessage.create_date);
+    const formattedDate = new Intl.DateTimeFormat("pl-PL", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }).format(dateTime);
+
+    const formattedTime = new Intl.DateTimeFormat("pl-PL", {
+      hour: "numeric",
+      minute: "numeric",
+    }).format(dateTime);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        author: fetchedMessage.user_name,
+        content: fetchedMessage.message,
+        date: `${formattedDate}`,
+        time: `${formattedTime}`,
+      },
+    ]);
+  };
+
   useEffect(() => {
-    const fetchCookie = async () => {
-      const cookie = await getCookie("access_token");
-      if (!cookie) {
-        router.push("/logowanie");
-      } else {
-        setAccessToken(cookie);
-      }
-    };
     fetchCookie();
-
-    const fetchData = async () => {
-      if (chosenRoom !== null && chosenRoom !== undefined) {
-        const fetchedMessages = await fetchChatMessages(chosenRoom);
-        const fetchedMembers = await getChatMembers(chosenRoom);
-
-        let resultMessages: Object[] = [];
-        fetchedMessages.forEach((fetchedMessage) => {
-          const dateTime = new Date(fetchedMessage.create_date);
-          const formattedDate = new Intl.DateTimeFormat("pl-PL", {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          }).format(dateTime);
-
-          const formattedTime = new Intl.DateTimeFormat("pl-PL", {
-            hour: "numeric",
-            minute: "numeric",
-          }).format(dateTime);
-
-          resultMessages.push({
-            author: fetchedMessage.user_name,
-            content: fetchedMessage.message,
-            date: `${formattedDate}`,
-            time: `${formattedTime}`,
-          });
-        });
-
-        let resultMembers: Object[] = [];
-        fetchedMembers.forEach((fetchedMember) => {
-          resultMembers.push({
-            username: fetchedMember.user_name,
-          });
-        });
-
-        setMessages(resultMessages);
-        setMembers(resultMembers);
-      }
-    };
-
     fetchData();
+
+    socket.on("connect", onConnect);
+    socket.on("new_message", onNewMessage);
+    socket.on("disconnect", onDisconnect);
+
+    if (socket.connected) {
+      onConnect();
+    }
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("new_message", onNewMessage);
+    };
   }, [chosenRoom]);
 
-  // TODO remove
-  // const rooms = [{ name: "Public room 1" }, { name: "Public room 2" }, { name: "Public room 3" }];
-
-  // const messages = [
-  //   {
-  //     author: "My name",
-  //     content: "Message dsaf sda fsdaf sadf sdaf sfda",
-  //     date: "07.05.25",
-  //     time: "14:21",
-  //   },
-  //   {
-  //     author: "My name",
-  //     content: "Message dsaf sda fsdaf sadf sdaf sa",
-  //     date: "07.05.25",
-  //     time: "14:22",
-  //   },
-  //   {
-  //     author: "My name",
-  //     content: "Message dsaf sda fsdaf sadf sdaf sa",
-  //     date: "07.05.25",
-  //     time: "14:23",
-  //   },
-  //   {
-  //     author: "My name",
-  //     content: "Message dsaf sda fsdaf sadf sdaf sa",
-  //     date: "07.05.25",
-  //     time: "14:24",
-  //   },
-  //   {
-  //     author: "My name",
-  //     content: "Message dsaf sda fsdaf sadf sdaf sa",
-  //     date: "07.05.25",
-  //     time: "14:25",
-  //   },
-  // ];
   return (
     <div className="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden">
-      <LeftAside
-        aside={leftAside}
-        setChosenRoom={setChosenRoom}
-        payload={{ rooms, setWorkspace }}
+      <LeftAside aside={leftAside} joinRoom={joinRoom} payload={{ rooms, setWorkspace }} />
+      <Workspace
+        workspace={workspace}
+        payload={{ messages, setWorkspace, newMessage, setNewMessage, sendMessage }}
       />
-      <Workspace workspace={workspace} payload={{ messages, setWorkspace }} />
       <RightAside aside={rightAside} payload={{ members }} />
     </div>
   );
 }
+
 const LeftAside = ({
   aside,
-  setChosenRoom,
+  joinRoom,
   payload,
 }: {
   aside: string;
-  setChosenRoom: any;
+  joinRoom: any;
   payload?: any;
 }) => {
   if (aside === "ROOMS")
@@ -160,7 +195,7 @@ const LeftAside = ({
                   key={room.name}
                   name={room.name}
                   onClick={() => {
-                    setChosenRoom(room.id);
+                    joinRoom(room.id);
                   }}
                 />
               ))}
@@ -192,7 +227,7 @@ const Workspace = ({
         <div className="self-stretch flex-1 flex flex-col justify-end items-start">
           {messages.map((message, index) => (
             <Message
-              key={`${message.author}-${message.date}-${message.time}`}
+              key={index}
               author={message.author}
               content={message.content}
               date={message.date}
@@ -206,8 +241,13 @@ const Workspace = ({
               type="text"
               className="flex-1 px-4 flex justify-center items-center gap-2.5 text-2xl"
               placeholder="Napisz coś..."
+              value={payload.newMessage}
+              onChange={(e) => payload.setNewMessage(e.target.value)}
             />
-            <div className="w-16 h-16 bg-[#6D66D2] flex justify-center items-center gap-2.5">
+            <div
+              className="w-16 h-16 bg-[#6D66D2] flex justify-center items-center gap-2.5"
+              onClick={() => payload.sendMessage()}
+            >
               <Icon name="play" className="w-8 h-8 text-white" />
             </div>
           </div>
