@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Rooms, db, Users_room
+from room import socketio
 
 bp = Blueprint('rooms', __name__, url_prefix='/api')
 
@@ -50,6 +51,8 @@ def join_room():
     db.session.add(new_user_room)
     db.session.commit()
 
+    socketio.emit("user_list_updated", to=str(room_id))
+
     return jsonify({"message": "Joined room successfully"}), 200
 
 @bp.route('/room/leave', methods=['POST'])
@@ -73,5 +76,7 @@ def leave_room():
 
     db.session.delete(user_room)
     db.session.commit()
+
+    socketio.emit("user_list_updated", to=str(room_id))
 
     return jsonify({"message": "Left room successfully"}), 200
