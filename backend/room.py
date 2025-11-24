@@ -18,6 +18,7 @@ def handle_join(data):
     if (room.is_private):
         user = Users_room.query.filter_by(user_name=user_name, room_id=room_id).first()
         if (user is None):
+            emit('error', {'message': 'Join failed', 'code': 4})
             return
 
     join_room(room_id)
@@ -25,7 +26,7 @@ def handle_join(data):
     emit('user_joined', {
         "user_name": user_name,
         'room_id': room_id
-    })
+    }, to=room_id)
     
 
 @socketio.on('leave')
@@ -80,3 +81,22 @@ def handle_message(data):
         'message': message,
         'create_date': chat_entry.message_date.isoformat()
     }, to=room_id)
+
+@socketio.on('watchdog')
+def handle_watchdog(data):
+    user_name = data['user_name']
+
+    if not user_name:
+        emit('error', {'message': 'Missing user_name',
+                       'code': 3})
+        return
+    
+    query = Users_room.query.filter_by(user_name=user_name)
+
+    user_rooms = query.all()
+    rooms_list = [user_room.room_id for user_room in user_rooms]
+
+    for room_id in rooms_list:
+        emit('user_online', {
+            "user_name": user_name,
+        }, to=str(room_id))
