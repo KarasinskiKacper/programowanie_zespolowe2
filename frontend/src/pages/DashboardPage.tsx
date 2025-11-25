@@ -23,7 +23,10 @@ export default function Page() {
   const [workspace, setWorkspace] = useState<string>("ROOM_CHAT");
   const [rightAside, setRightAside] = useState<string>("ROOM_USERS");
 
-  const { rooms, setRooms, chosenRoom, setChosenRoom } = useRooms();
+  const { rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms } = useRooms();
+
+  const [shownRooms, setShownRooms] = useState<Object[]>(rooms);
+  const [shownRoomsSearch, setShownRoomsSearch] = useState<string>("");
 
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
@@ -92,7 +95,6 @@ export default function Page() {
     const user_name = jwt.decode(accessToken).sub;
     if (chosenRoom !== null && chosenRoom !== room_id) {
       socket.emit("leave", { room_id, user_name });
-      console.log("asd");
     }
 
     setChosenRoom(room_id);
@@ -107,8 +109,6 @@ export default function Page() {
   };
 
   const onNewMessage = (fetchedMessage) => {
-    console.log(fetchedMessage);
-
     const dateTime = new Date(fetchedMessage.create_date);
     const formattedDate = new Intl.DateTimeFormat("pl-PL", {
       year: "numeric",
@@ -133,8 +133,16 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchCookie();
-    fetchData();
+    if (shownRooms.length === 0) {
+      setShownRooms(rooms);
+    }
+  }, [rooms]);
+
+  useEffect(() => {
+    if (accessToken === "") {
+      fetchCookie();
+      fetchData();
+    }
 
     socket.on("connect", onConnect);
     socket.on("new_message", onNewMessage);
@@ -153,7 +161,18 @@ export default function Page() {
 
   return (
     <div className="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden">
-      <LeftAside aside={leftAside} joinRoom={joinRoom} payload={{ rooms, setWorkspace }} />
+      <LeftAside
+        aside={leftAside}
+        joinRoom={joinRoom}
+        payload={{
+          rooms,
+          shownRooms,
+          setWorkspace,
+          shownRoomsSearch,
+          setShownRoomsSearch,
+          setShownRooms,
+        }}
+      />
       <Workspace
         workspace={workspace}
         payload={{ messages, setWorkspace, newMessage, setNewMessage, sendMessage }}
@@ -190,20 +209,59 @@ const LeftAside = ({
               Pokoje publiczne
             </div>
             <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
-              {payload.rooms?.map((room) => (
-                <RoomItem
-                  key={room.name}
-                  name={room.name}
-                  onClick={() => {
-                    joinRoom(room.id);
-                  }}
-                />
-              ))}
+              {payload.shownRooms?.map((room, index) => {
+                if (!room.isPrivate) {
+                  return (
+                    <RoomItem
+                      key={index}
+                      name={room.name}
+                      onClick={() => {
+                        joinRoom(room.id);
+                      }}
+                    />
+                  );
+                }
+              })}
+            </div>
+            <div className="justify-start text-[#6D66D2] text-xl font-bold font-['Inter']">
+              Pokoje prywatne
+            </div>
+            <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
+              {payload.shownRooms?.map((room, index) => {
+                if (room.isPrivate) {
+                  return (
+                    <RoomItem
+                      key={index}
+                      name={room.name}
+                      onClick={() => {
+                        joinRoom(room.id);
+                      }}
+                    />
+                  );
+                }
+              })}
             </div>
           </div>
         </div>
         <div className="self-stretch p-2 outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
-          <input type="text" placeholder="Szukaj..." />
+          <input
+            type="text"
+            placeholder="Szukaj..."
+            // value={payload.shownRoomsSearch}
+            // onChange={(e) => payload.setShownRoomsSearch(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value === "") {
+                payload.setShownRooms(payload.rooms);
+              } else {
+                const lowerSearch = e.target.value.toLowerCase();
+                const filteredRooms = payload.rooms.filter((room) =>
+                  room.name.toLowerCase().includes(lowerSearch)
+                );
+
+                payload.setShownRooms(filteredRooms);
+              }
+            }}
+          />
           <Icon name="loop" className="w-8 h-8 text-[#6D66D2]" />
         </div>
       </div>
@@ -242,6 +300,7 @@ const Workspace = ({
               className="flex-1 px-4 flex justify-center items-center gap-2.5 text-2xl"
               placeholder="Napisz coś..."
               value={payload.newMessage}
+              maxLength={999}
               onChange={(e) => payload.setNewMessage(e.target.value)}
             />
             <div

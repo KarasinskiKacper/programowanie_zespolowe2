@@ -22,6 +22,13 @@ export async function getPublicRooms() {
   return response.json();
 }
 
+export async function getUserRooms(userName: string) {
+  const response = await fetch(`${BASE_URL}/user_rooms?user_name=${userName}`, {
+    method: "GET",
+  });
+  return response.json();
+}
+
 export async function getChatMessages(roomId: number) {
   const response = await fetch(`${BASE_URL}/chat_history?room_id=${roomId}`, {
     method: "GET",

@@ -12,6 +12,8 @@ interface RoomsContextType {
   setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
   chosenRoom: number | null;
   setChosenRoom: React.Dispatch<React.SetStateAction<number | null>>;
+  userRooms: Object[];
+  setUserRooms: React.Dispatch<React.SetStateAction<Object[]>>;
 }
 
 const RoomsContext = createContext<RoomsContextType | undefined>(undefined);
@@ -27,9 +29,11 @@ export const useRooms = () => {
 export const RoomsProvider = ({ children }: { children: ReactNode }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [chosenRoom, setChosenRoom] = useState<number | null>(null);
+  const [ userRooms, setUserRooms] = useState<Object[]>([]);
+
 
   return (
-    <RoomsContext.Provider value={{ rooms, setRooms, chosenRoom, setChosenRoom }}>
+    <RoomsContext.Provider value={{ rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms}}>
       {children}
     </RoomsContext.Provider>
   );
