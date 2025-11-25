@@ -9,7 +9,7 @@ import { useRooms } from "../components/context/RoomContext";
 import { socket } from "../socket";
 
 import { getCookie } from "../app/actions";
-import { getChatMessages, getChatMembers } from "../auth/lib";
+import { getChatMessages, getChatMembers, joinPublicRoom } from "../auth/lib";
 import jwt from "jsonwebtoken";
 
 const fetchChatMessages = async (roomId: number) => {
@@ -91,13 +91,17 @@ export default function Page() {
     setIsConnected(false);
   };
 
-  const joinRoom = (room_id: number) => {
+  const joinRoom = async (room_id: number) => {
     const user_name = jwt.decode(accessToken).sub;
+    if (chosenRoom !== room_id) {
+      joinPublicRoom(room_id, user_name); // TODO fix 400 on joining room
+    }
     if (chosenRoom !== null && chosenRoom !== room_id) {
       socket.emit("leave", { room_id, user_name });
     }
 
     setChosenRoom(room_id);
+
     socket.emit("join", { room_id, user_name });
   };
 
@@ -139,11 +143,11 @@ export default function Page() {
   }, [rooms]);
 
   useEffect(() => {
-    if (accessToken === "") {
-      fetchCookie();
-      fetchData();
-    }
+    fetchCookie();
+    fetchData();
+  }, [chosenRoom]);
 
+  useEffect(() => {
     socket.on("connect", onConnect);
     socket.on("new_message", onNewMessage);
     socket.on("disconnect", onDisconnect);
@@ -157,7 +161,7 @@ export default function Page() {
       socket.off("disconnect", onDisconnect);
       socket.off("new_message", onNewMessage);
     };
-  }, [chosenRoom]);
+  }, []);
 
   return (
     <div className="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden">

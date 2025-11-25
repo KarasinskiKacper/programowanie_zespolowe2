@@ -22,6 +22,18 @@ export async function getPublicRooms() {
   return response.json();
 }
 
+export async function joinPublicRoom(room_id: number, user_name: string) {
+  const response = await fetch(`${BASE_URL}/room/join`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ user_name, room_id }),
+  });
+  return response;
+}
+
+
 export async function getUserRooms(userName: string) {
   const response = await fetch(`${BASE_URL}/user_rooms?user_name=${userName}`, {
     method: "GET",
