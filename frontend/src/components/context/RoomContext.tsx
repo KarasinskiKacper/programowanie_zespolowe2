@@ -2,8 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-import { getPublicRooms } from "../../auth/lib";
-
 interface Room {
   id: number;
   name: string;
@@ -14,6 +12,8 @@ interface RoomsContextType {
   setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
   chosenRoom: number | null;
   setChosenRoom: React.Dispatch<React.SetStateAction<number | null>>;
+  userRooms: Object[];
+  setUserRooms: React.Dispatch<React.SetStateAction<Object[]>>;
 }
 
 const RoomsContext = createContext<RoomsContextType | undefined>(undefined);
@@ -29,24 +29,11 @@ export const useRooms = () => {
 export const RoomsProvider = ({ children }: { children: ReactNode }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [chosenRoom, setChosenRoom] = useState<number | null>(null);
+  const [ userRooms, setUserRooms] = useState<Object[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (rooms.length === 0) {
-        const fetchedRooms = await getPublicRooms();
-        let resultRooms: Object[] = [];
-
-        fetchedRooms.forEach((room) => {
-          resultRooms.push({ name: room.room_name, id: room.room_id });
-        });
-        setRooms(resultRooms);
-      }
-    };
-    fetchData();
-  }, []);
 
   return (
-    <RoomsContext.Provider value={{ rooms, setRooms, chosenRoom, setChosenRoom }}>
+    <RoomsContext.Provider value={{ rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms}}>
       {children}
     </RoomsContext.Provider>
   );

@@ -9,6 +9,8 @@ import { useRooms } from "../../components/context/RoomContext";
 
 import { getCookie, deleteCookie } from "../actions";
 
+import { getPublicRooms, getUserRooms } from "../../auth/lib";
+
 import jwt from "jsonwebtoken";
 
 const logout = async () => {
@@ -24,20 +26,40 @@ export default function RootLayout({
   const [accessToken, setAccessToken] = useState<string>("");
   // const [rooms, setRooms] = useState<Object[]>([]);
   // const [chosenRoom, setChosenRoom] = useState<number | null>(null);
-  const { rooms, setRooms, chosenRoom, setChosenRoom } = useRooms();
+  const { rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms } = useRooms();
 
   useEffect(() => {
-    const fetchCookie = async () => {
+    const fetchData = async () => {
       const cookie = await getCookie("access_token");
       if (!cookie) {
         router.push("/logowanie");
       } else {
         setAccessToken(cookie);
-        console.log("username:", jwt.decode(cookie).sub);
+      }
+
+      if (rooms.length === 0) {
+        const fetchedRooms = await getPublicRooms();
+        const fetchedUserRooms = await getUserRooms(jwt.decode(cookie).sub);
+
+        let resultRooms: Object[] = [];
+
+        fetchedRooms.forEach((room) => {
+          resultRooms.push({ name: room.room_name, id: room.room_id, isPrivate: false });
+        });
+
+        let resultUserRooms: Object[] = [];
+        fetchedUserRooms.forEach((room) => {
+          if (!resultRooms.find((r) => r["id"] === room.room_id)) {
+            resultRooms.push({ name: String(room.room_id), id: room.room_id, isPrivate: true }); // TODO change id to name
+          }
+          resultUserRooms.push(room);
+        });
+        setRooms(resultRooms);
+        setUserRooms(resultUserRooms);
       }
     };
-    fetchCookie();
-  }, []);
+    fetchData();
+  }, [accessToken]);
 
   return (
     <div className="flex-1 min-h-screen bg-white inline-flex justify-start items-start overflow-hidden">
@@ -60,6 +82,8 @@ export default function RootLayout({
             <div
               className="w-24 h-24 inline-flex justify-center items-center gap-2.5"
               onClick={() => {
+                setChosenRoom(null);
+                setRooms([]);
                 logout();
                 router.push("/logowanie");
               }}
