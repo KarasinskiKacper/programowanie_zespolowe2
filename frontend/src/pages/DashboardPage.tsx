@@ -3,9 +3,11 @@ import Button from "@/components/Button";
 import Icon from "@/components/Icon";
 import TextInput from "@/components/TextInput";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
+
 import { useRooms } from "../components/context/RoomContext";
+import useInterval from "@/components/useInterval";
 import { socket } from "../socket";
 
 import { getCookie } from "../app/actions";
@@ -44,11 +46,9 @@ export default function Page() {
     }
   };
 
-  const fetchData = async () => {
+  const fetchMessages = async () => {
     if (chosenRoom !== null && chosenRoom !== undefined) {
       const fetchedMessages = await fetchChatMessages(chosenRoom);
-      const fetchedMembers = await getChatMembers(chosenRoom);
-
       let resultMessages: Object[] = [];
       fetchedMessages.forEach((fetchedMessage) => {
         const dateTime = new Date(fetchedMessage.create_date);
@@ -71,6 +71,13 @@ export default function Page() {
         });
       });
 
+      setMessages(resultMessages);
+    }
+  };
+
+  const fetchMembers = async () => {
+    if (chosenRoom !== null && chosenRoom !== undefined) {
+      const fetchedMembers = await getChatMembers(chosenRoom);
       let resultMembers: Object[] = [];
       fetchedMembers.forEach((fetchedMember) => {
         resultMembers.push({
@@ -78,9 +85,13 @@ export default function Page() {
         });
       });
 
-      setMessages(resultMessages);
       setMembers(resultMembers);
     }
+  };
+
+  const fetchData = async () => {
+    await fetchMessages();
+    await fetchMembers();
   };
 
   const onConnect = () => {
@@ -89,15 +100,26 @@ export default function Page() {
 
   const onDisconnect = () => {
     setIsConnected(false);
+    setChosenRoom(null);
   };
+
+  function watchdog() {
+    if (accessToken && chosenRoom) {
+      const user_name = jwt.decode(accessToken).sub;
+      socket.emit("watchdog", {
+        user_name: user_name,
+      });
+    }
+  }
 
   const joinRoom = async (room_id: number) => {
     const user_name = jwt.decode(accessToken).sub;
     if (chosenRoom !== room_id) {
       joinPublicRoom(room_id, user_name); // TODO fix 400 on joining room
     }
+
     if (chosenRoom !== null && chosenRoom !== room_id) {
-      socket.emit("leave", { room_id, user_name });
+      socket.emit("leave", { room_id: chosenRoom, user_name });
     }
 
     setChosenRoom(room_id);
@@ -106,7 +128,7 @@ export default function Page() {
   };
 
   const sendMessage = () => {
-    if (chosenRoom === null || isConnected === false || newMessage === "") return;
+    if (chosenRoom === null || newMessage === "") return;
     const user_name = jwt.decode(accessToken).sub;
     socket.emit("message", { room_id: chosenRoom, user_name, message: newMessage });
     setNewMessage("");
@@ -136,6 +158,30 @@ export default function Page() {
     ]);
   };
 
+  const onUserJoin = (data) => {
+    console.log(`${data.user_name} dołączył do pokoju ${data.room_id}`);
+  };
+  const onUserLeft = (data) => {
+    console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
+  };
+  const onUserOnline = (data) => {
+    console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
+  };
+  const onUserListUpdate = () => {
+    console.log(`user list updated`);
+  };
+
+  const onError = (data) => {
+    console.log(`Error: ${data.message}`);
+  };
+
+  useInterval(
+    () => {
+      watchdog();
+    },
+    isConnected ? 1000 : null
+  );
+
   useEffect(() => {
     if (shownRooms.length === 0) {
       setShownRooms(rooms);
@@ -152,6 +198,26 @@ export default function Page() {
     socket.on("new_message", onNewMessage);
     socket.on("disconnect", onDisconnect);
 
+    // response on join
+    socket.on("user_joined", onUserJoin);
+
+    // response on leave
+    socket.on("user_left", onUserLeft);
+
+    // response on watchdog
+    socket.on("user_online", onUserOnline);
+
+    // response on API user_room table update
+    socket.on("user_list_updated", onUserListUpdate);
+
+    // response on error
+    socket.on("error", onError);
+
+    // response on message
+    // socket.on('new_message', (data) => {
+    //     console.log(`[User ${data.user_name}]: ${data.message}`);
+    // });
+
     if (socket.connected) {
       onConnect();
     }
@@ -160,6 +226,12 @@ export default function Page() {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("new_message", onNewMessage);
+
+      socket.off("user_join", onUserJoin);
+      socket.off("user_left", onUserLeft);
+      socket.off("user_online", onUserOnline);
+      socket.off("user_list_updated", onUserListUpdate);
+      socket.off("error", onError);
     };
   }, []);
 
@@ -179,7 +251,7 @@ export default function Page() {
       />
       <Workspace
         workspace={workspace}
-        payload={{ messages, setWorkspace, newMessage, setNewMessage, sendMessage }}
+        payload={{ messages, setWorkspace, newMessage, setNewMessage, sendMessage, chosenRoom }}
       />
       <RightAside aside={rightAside} payload={{ members }} />
     </div>
@@ -302,10 +374,13 @@ const Workspace = ({
             <input
               type="text"
               className="flex-1 px-4 flex justify-center items-center gap-2.5 text-2xl"
-              placeholder="Napisz coś..."
+              placeholder={
+                payload.chosenRoom !== null ? "Napisz coś..." : "Dołącz do pokoju, aby pisać..."
+              }
               value={payload.newMessage}
               maxLength={999}
               onChange={(e) => payload.setNewMessage(e.target.value)}
+              disabled={payload.chosenRoom === null}
             />
             <div
               className="w-16 h-16 bg-[#6D66D2] flex justify-center items-center gap-2.5"
