@@ -38,7 +38,11 @@ def join_room():
     
     if not room_id or not user_name:
         return jsonify({"error": "Missing room_id or user_name parameter"}), 400
-
+    
+    user_room = Users_room.query.filter_by(user_name=user_name, room_id=room_id).first()
+    if user_room is not None:
+        return jsonify({"error": "User already in room"}), 400
+    
     room = Rooms.query.filter_by(room_id=room_id).first()
 
     if room is None:
