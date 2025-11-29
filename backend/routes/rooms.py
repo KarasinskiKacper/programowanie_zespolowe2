@@ -84,3 +84,42 @@ def leave_room():
     socketio.emit("user_list_updated", to=str(room_id))
 
     return jsonify({"message": "Left room successfully"}), 200
+
+@bp.route('/room/create', methods=['POST'])
+def create_room():
+    data = request.json
+    room_name = data.get("room_name")
+    room_owner = data.get("room_owner")
+    is_private = data.get("is_private")
+    access_key = data.get("access_key")
+    
+    if not room_name or not room_owner:
+        return jsonify({"error": "Missing room_name or room_owner parameter"}), 400
+    
+    if is_private and not access_key:
+        return jsonify({"error": "Missing access_key parameter"}), 400
+
+    new_room = Rooms(room_name=room_name, room_owner=room_owner, is_private=is_private, access_key=access_key)
+    db.session.add(new_room)
+    db.session.commit()
+
+    return jsonify({"message": "Room created successfully"}), 200
+
+@bp.route('/room/delete', methods=['POST'])
+def delete_room():
+    data = request.json
+    room_id = data.get("room_id")
+    room_owner = data.get("room_owner")
+
+    if not room_id:
+        return jsonify({"error": "Missing room_id parameter"}), 400
+
+    room = Rooms.query.filter_by(room_id=room_id, room_owner=room_owner).first()
+
+    if room is None:
+        return jsonify({"error": "Room not found"}), 404
+
+    db.session.delete(room)
+    db.session.commit()
+
+    return jsonify({"message": "Room deleted successfully"}), 200
