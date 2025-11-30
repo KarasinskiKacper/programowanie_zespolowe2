@@ -24,7 +24,7 @@ export default function RootLayout({
   const [rooms, setRooms] = useState<Object[]>([]);
   const [chosenRoom, setChosenRoom] = useState<number | null>(null);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchCookie = async () => {
       const cookie = await getCookie("access_token");
       if (!cookie) {
@@ -70,7 +70,7 @@ export default function RootLayout({
           </div>
           <div className="flex flex-col justify-start items-start">
             <div className="w-24 h-24 inline-flex justify-center items-center gap-2.5">
-              <Icon name="settings" className="w-12 h-12 text-white" />
+              <Icon name="settings" className="w-12 h-12 text-white" onClick={() => router.push("/ustawienia")} />
             </div>
             <div
               className="w-24 h-24 inline-flex justify-center items-center gap-2.5"
@@ -87,7 +87,12 @@ export default function RootLayout({
       <div className="flex-1 self-stretch inline-flex flex-col justify-start items-start overflow-hidden">
         <div className="self-stretch h-24 px-4 bg-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
           <div className="justify-start text-white text-4xl font-normal font-['Inter']">
+            {/* <Icon name="lock" className="w-12 h-12 text-[#ACD266]" /> */}
+            {/* <Icon name="settings" className="w-12 h-12 text-[#ACD266]" /> */}
+            {/* <Icon name="avatar" className="w-12 h-12 text-[#ACD266]" /> */}
+            <Icon name="unlock" className="w-12 h-12 text-[#ACD266]" />
             {rooms.find((room) => room.id === chosenRoom)?.name}
+            
           </div>
           <div className="flex justify-center items-center gap-2.5">
             <div className="justify-start text-white text-3xl font-normal font-['Inter']">

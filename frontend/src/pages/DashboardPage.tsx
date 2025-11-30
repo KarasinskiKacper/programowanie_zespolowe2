@@ -27,7 +27,7 @@ export default function Page() {
   const [messages, setMessages] = useState<Object[]>([]);
   const [members, setMembers] = useState<Object[]>([]);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchCookie = async () => {
       const cookie = await getCookie("access_token");
       if (!cookie) {
@@ -153,7 +153,7 @@ const LeftAside = ({
   if (aside === "ROOMS")
     return (
       <div className="w-80 self-stretch p-4 border-r-2 border-[#6D66D2] inline-flex flex-col justify-start items-start gap-4 overflow-hidden">
-        <Button label="Nowy pokój" onClick={() => {}} size="small" />
+        <Button label="Nowy pokój" onClick={() => payload.setWorkspace("CREATE_ROOM")} size="small" />
         <Button
           label="Dołącz do pokoju"
           onClick={() => {
@@ -213,7 +213,14 @@ const Workspace = ({
             />
           ))}
         </div>
-        <div className="self-stretch p-4 flex flex-col justify-start items-start overflow-hidden">
+        <div className="self-stretch">
+          <div className="p-6">
+            <Icon name="edit" className="w-12 h-12 text-[#6D66D2] " onClick={() => {
+              payload.setWorkspace("ROOM_SETTINGS");
+            }} />
+          </div>
+          
+          <div className="self-stretch flex-1 p-4 flex flex-col justify-start items-start overflow-hidden">
           <div className="self-stretch outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
             <input
               type="text"
@@ -224,6 +231,7 @@ const Workspace = ({
               <Icon name="play" className="w-8 h-8 text-white" />
             </div>
           </div>
+        </div>
         </div>
       </div>
     );
@@ -243,6 +251,91 @@ const Workspace = ({
             onClick={() => {
               payload.setWorkspace("ROOM_CHAT");
             }}
+            color="secondary"
+          />
+          <Button
+            label="Anuluj"
+            onClick={() => {
+              payload.setWorkspace("ROOM_CHAT");
+            }}
+            type="outline"
+          />
+        </div>
+      </div>
+    );
+    if (workspace === "CREATE_ROOM")
+    return (
+      <div className="flex-1 self-stretch  inline-flex flex-col justify-center items-center gap-8 overflow-hidden">
+        <div className="p-16 bg-white  outline-4  outline-[#6D66D2] flex flex-col justify-start items-start gap-8">
+          <TextInput
+            label="Nazwa pokoju"
+            placeholder="Wpisz nazwę pokoju"
+            value={""}
+            setValue={() => {}}
+          />
+          <TextInput label="Hasło" placeholder="Wpisz hasło" value={""} setValue={() => {}} />
+          <TextInput label="Powtórz hasło" placeholder="Powtórz hasło" value={""} setValue={() => {}} />
+            <div>
+              <input type="checkbox" className="h-8 w-8 border-4 appearance-none border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent" />
+              <label className="ml-4 justify-start text-black text-2xl font-normal font-['Inter']">Prywatny pokój</label>
+            </div>
+          
+          <Button
+            label="Utwórz"
+            onClick={() => {
+              payload.setWorkspace("ROOM_CHAT");
+            }}
+            color="secondary"
+          />
+          <Button
+            label="Anuluj"
+            onClick={() => {
+              payload.setWorkspace("ROOM_CHAT");
+            }}
+            type="outline"
+          />
+        </div>
+      </div>
+    );
+    if (workspace === "ROOM_SETTINGS")
+    return (
+      <div className="flex-1 self-stretch  inline-flex flex-col justify-center items-center gap-8 overflow-hidden">
+        <div className="p-16 bg-white  outline-4  outline-[#6D66D2] flex flex-col justify-start items-start gap-8">
+          <TextInput
+            label="Nazwa pokoju"
+            placeholder="Wpisz nazwę pokoju"
+            value={""}
+            setValue={() => {}}
+          />
+          <TextInput label="Hasło" placeholder="Wpisz hasło" value={""} setValue={() => {}} />
+          <TextInput label="Powtórz hasło" placeholder="Powtórz hasło" value={""} setValue={() => {}} />
+            <div>
+              <input type="checkbox" className="h-8 w-8 border-4 appearance-none border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent" />
+              <label className="ml-4 justify-start text-black text-2xl font-normal font-['Inter']">Prywatny pokój</label>
+            </div>
+          
+          <Button
+            label="Edytuj"
+            onClick={() => {
+              payload.setWorkspace("ROOM_CHAT");
+            }}
+            color="secondary"
+          />
+          <Button
+            label="Anuluj"
+            onClick={() => {
+              payload.setWorkspace("ROOM_CHAT");
+            }}
+            type="outline"
+          />
+          <Button
+            label="Usuń pokój"
+            onClick={() => {
+              payload.setWorkspace("ROOM_CHAT");
+            }}
+            type="outline"
+            className="outline-[#F35454]"
+            classNameT="text-red-600"
           />
         </div>
       </div>
@@ -272,9 +365,13 @@ const RightAside = ({
               {members.map((member, index) => (
                 <div
                   key={index}
-                  className="justify-start text-black text-xl font-light font-['Inter']"
+                  className=" self-stretch text-black text-xl font-light font-['Inter']"
                 >
+                  <div className="flex-1 justify-start items-center gap-2">
+                    <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
                   {member.username}
+                  </div>
+                  <div className="h-8 w-4 items-center"><div className="h-1 w-4 bg-[#ACD266] rounded-full"></div></div>
                 </div>
               ))}
             </div>
