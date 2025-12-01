@@ -1,9 +1,4 @@
-// export async function login(formData: FormData) {
-//     const user = {
-//         login: formData.get("login"),
-//         password: formData.get("password"),
-//     };
-// }
+import jwt from "jsonwebtoken";
 
 // TODO change URL
 const BASE_URL = "http://192.168.1.22:5000/api";
@@ -22,7 +17,8 @@ export async function getPublicRooms() {
   return response.json();
 }
 
-export async function joinPublicRoom(room_id: number, user_name: string) {
+export async function joinPublicRoom(room_id: number, accessToken: string) {
+  const user_name = jwt.decode(accessToken).sub;
   const response = await fetch(`${BASE_URL}/room/join`, {
     method: "POST",
     headers: {
@@ -32,7 +28,6 @@ export async function joinPublicRoom(room_id: number, user_name: string) {
   });
   return response;
 }
-
 
 export async function getUserRooms(userName: string) {
   const response = await fetch(`${BASE_URL}/user_rooms?user_name=${userName}`, {
@@ -75,4 +70,30 @@ export async function registerUser(login: string, password: string) {
     body: JSON.stringify({ user_name: login, password: password }),
   });
   return response;
+}
+
+export async function getProfilData(accessToken: string) {
+  const user_name = jwt.decode(accessToken).sub;
+
+  const response = await fetch(`${BASE_URL}/user/get_info?user_name=${user_name}`, {
+    method: "GET",
+  });
+  return response.json();
+}
+
+export async function changePassword(
+  accessToken: string,
+  old_password: string,
+  new_password: string
+) {
+  const user_name = jwt.decode(accessToken).sub;
+
+  const response = await fetch(`${BASE_URL}/user/change_passowrd`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ user_name, old_password, new_password }),
+  });
+  return response.json();
 }

@@ -24,6 +24,7 @@ export default function RootLayout({
 }>) {
   const router = useRouter();
   const [accessToken, setAccessToken] = useState<string>("");
+  const [topIcon, setTopIcon] = useState<string>("");
   // const [rooms, setRooms] = useState<Object[]>([]);
   // const [chosenRoom, setChosenRoom] = useState<number | null>(null);
   const { rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms } = useRooms();
@@ -39,6 +40,7 @@ export default function RootLayout({
 
       if (rooms.length === 0) {
         const fetchedRooms = await getPublicRooms();
+        // const fetchedUserRooms = [];
         const fetchedUserRooms = await getUserRooms(jwt.decode(cookie).sub);
 
         let resultRooms: Object[] = [];
@@ -50,16 +52,28 @@ export default function RootLayout({
         let resultUserRooms: Object[] = [];
         fetchedUserRooms.forEach((room) => {
           if (!resultRooms.find((r) => r["id"] === room.room_id)) {
-            resultRooms.push({ name: String(room.room_id), id: room.room_id, isPrivate: true }); // TODO change id to name
+            resultRooms.push({ name: room.room_name, id: room.room_id, isPrivate: true }); // TODO change id to name
           }
           resultUserRooms.push(room);
         });
         setRooms(resultRooms);
+        console.log(resultRooms);
+
         setUserRooms(resultUserRooms);
       }
     };
     fetchData();
   }, [accessToken]);
+
+  useEffect(() => {
+    if (chosenRoom !== null && chosenRoom !== undefined) {
+      setTopIcon(rooms.find((room) => room.id === chosenRoom)?.isPrivate ? "lock" : "unlock");
+    } else {
+      setTopIcon("");
+    }
+  }, [chosenRoom]);
+
+  console.log(topIcon, chosenRoom);
 
   return (
     <div className="flex-1 min-h-screen bg-white inline-flex justify-start items-start overflow-hidden">
@@ -72,7 +86,11 @@ export default function RootLayout({
         <div className="self-stretch flex-1 bg-[#6D66D2] flex flex-col justify-between items-center overflow-hidden">
           <div className="flex flex-col justify-start items-start">
             <div className="w-24 h-24 inline-flex justify-center items-center gap-2.5">
-              <Icon name="chats" className="w-12 h-12 text-white" />
+              <Icon
+                name="chats"
+                className="w-12 h-12 text-white"
+                onClick={() => router.push("/dashboard")}
+              />
             </div>
           </div>
           <div className="flex flex-col justify-start items-start">
@@ -103,7 +121,8 @@ export default function RootLayout({
             {/* <Icon name="lock" className="w-12 h-12 text-[#ACD266]" /> */}
             {/* <Icon name="settings" className="w-12 h-12 text-[#ACD266]" /> */}
             {/* <Icon name="avatar" className="w-12 h-12 text-[#ACD266]" /> */}
-            <Icon name="unlock" className="w-12 h-12 text-[#ACD266]" />
+            {topIcon === "lock" && <Icon name="lock" className="w-12 h-12 text-[#ACD266]" />}
+            {topIcon === "unlock" && <Icon name="unlock" className="w-12 h-12 text-[#ACD266]" />}
             {rooms.find((room) => room.id === chosenRoom)?.name}
           </div>
           <div

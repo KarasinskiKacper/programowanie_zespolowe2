@@ -120,18 +120,18 @@ export default function Page() {
     }
 
     const joinRoom = async (room_id: number) => {
-        const user_name = jwt.decode(accessToken).sub;
-        if (chosenRoom !== room_id) {
-            joinPublicRoom(room_id, user_name); // TODO fix 400 on joining room
-        }
+      const user_name = jwt.decode(accessToken).sub;
+      if (chosenRoom !== room_id) {
+        joinPublicRoom(room_id, accessToken); // TODO fix 400 on joining room
+      }
 
-        if (chosenRoom !== null && chosenRoom !== room_id) {
-            socket.emit("leave", { room_id: chosenRoom, user_name });
-        }
+      if (chosenRoom !== null && chosenRoom !== room_id) {
+        socket.emit("leave", { room_id: chosenRoom, user_name });
+      }
 
-        setChosenRoom(room_id);
+      setChosenRoom(room_id);
 
-        socket.emit("join", { room_id, user_name });
+      socket.emit("join", { room_id, user_name });
     };
 
     const sendMessage = () => {
