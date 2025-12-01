@@ -27,41 +27,57 @@ export default function RootLayout({
   const [topIcon, setTopIcon] = useState<string>("");
   // const [rooms, setRooms] = useState<Object[]>([]);
   // const [chosenRoom, setChosenRoom] = useState<number | null>(null);
-  const { rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms } = useRooms();
+  const {
+    rooms,
+    setRooms,
+    chosenRoom,
+    setChosenRoom,
+    userRooms,
+    setUserRooms,
+    isReFetchNeeded,
+    setIsReFetchNeeded,
+  } = useRooms();
+  const fetchData = async () => {
+    const cookie = await getCookie("access_token");
+    if (!cookie) {
+      router.push("/logowanie");
+    } else {
+      setAccessToken(cookie);
+    }
+
+    const fetchedRooms = await getPublicRooms();
+    // const fetchedUserRooms = [];
+    const fetchedUserRooms = await getUserRooms(jwt.decode(cookie).sub);
+
+    let resultRooms: Object[] = [];
+
+    fetchedRooms.forEach((room) => {
+      resultRooms.push({
+        name: room.room_name,
+        id: room.room_id,
+        isPrivate: false,
+        room_owner: room.room_owner,
+      });
+    });
+
+    let resultUserRooms: Object[] = [];
+    fetchedUserRooms.forEach((room) => {
+      if (!resultRooms.find((r) => r["id"] === room.room_id)) {
+        resultRooms.push({
+          name: room.room_name,
+          id: room.room_id,
+          isPrivate: true,
+          room_owner: room.room_owner,
+        }); // TODO change id to name
+      }
+      resultUserRooms.push(room);
+    });
+    setRooms(resultRooms);
+
+    setUserRooms(resultUserRooms);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const cookie = await getCookie("access_token");
-      if (!cookie) {
-        router.push("/logowanie");
-      } else {
-        setAccessToken(cookie);
-      }
-
-      if (rooms.length === 0) {
-        const fetchedRooms = await getPublicRooms();
-        // const fetchedUserRooms = [];
-        const fetchedUserRooms = await getUserRooms(jwt.decode(cookie).sub);
-
-        let resultRooms: Object[] = [];
-
-        fetchedRooms.forEach((room) => {
-          resultRooms.push({ name: room.room_name, id: room.room_id, isPrivate: false });
-        });
-
-        let resultUserRooms: Object[] = [];
-        fetchedUserRooms.forEach((room) => {
-          if (!resultRooms.find((r) => r["id"] === room.room_id)) {
-            resultRooms.push({ name: room.room_name, id: room.room_id, isPrivate: true }); // TODO change id to name
-          }
-          resultUserRooms.push(room);
-        });
-        setRooms(resultRooms);
-        console.log(resultRooms);
-
-        setUserRooms(resultUserRooms);
-      }
-    };
     fetchData();
   }, [accessToken]);
 
@@ -72,8 +88,6 @@ export default function RootLayout({
       setTopIcon("");
     }
   }, [chosenRoom]);
-
-  console.log(topIcon, chosenRoom);
 
   return (
     <div className="flex-1 min-h-screen bg-white inline-flex justify-start items-start overflow-hidden">

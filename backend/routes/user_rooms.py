@@ -16,8 +16,8 @@ def get_user_rooms():
     
     result = []
     
-    
     for user_room, room in user_rooms:
+        print(room.room_name, room)
         result.append({
             "user_name": user_room.user_name,
             "room_id": user_room.room_id,

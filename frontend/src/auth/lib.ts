@@ -97,3 +97,32 @@ export async function changePassword(
   });
   return response.json();
 }
+
+export async function createRoom(
+  accessToken: string,
+  room_name: string,
+  is_private: boolean,
+  access_key: string
+) {
+  const room_owner = jwt.decode(accessToken).sub;
+  let response;
+  if (is_private) {
+    response = await fetch(`${BASE_URL}/room/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ room_owner, room_name, is_private, access_key }),
+    });
+  } else {
+    response = await fetch(`${BASE_URL}/room/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ room_owner, room_name, is_private }),
+    });
+  }
+
+  return response.json();
+}
