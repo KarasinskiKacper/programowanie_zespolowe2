@@ -77,7 +77,11 @@ export default function RootLayout({
           </div>
           <div className="flex flex-col justify-start items-start">
             <div className="w-24 h-24 inline-flex justify-center items-center gap-2.5">
-              <Icon name="settings" className="w-12 h-12 text-white" onClick={() => router.push("/ustawienia")} />
+              <Icon
+                name="settings"
+                className="w-12 h-12 text-white"
+                onClick={() => router.push("/ustawienia")}
+              />
             </div>
             <div
               className="w-24 h-24 inline-flex justify-center items-center gap-2.5"
@@ -101,9 +105,13 @@ export default function RootLayout({
             {/* <Icon name="avatar" className="w-12 h-12 text-[#ACD266]" /> */}
             <Icon name="unlock" className="w-12 h-12 text-[#ACD266]" />
             {rooms.find((room) => room.id === chosenRoom)?.name}
-            
           </div>
-          <div className="flex justify-center items-center gap-2.5">
+          <div
+            className="flex justify-center items-center gap-2.5"
+            onClick={() => {
+              router.push("/profil");
+            }}
+          >
             <div className="justify-start text-white text-3xl font-normal font-['Inter']">
               {accessToken && jwt.decode(accessToken).sub}
             </div>
