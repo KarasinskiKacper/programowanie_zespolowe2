@@ -10,19 +10,19 @@ def get_user_rooms():
     
     user_name = request.args.get("user_name")
     
-    query = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter_by(Users_room.user_name == user_name)
+    query = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Users_room.user_name == user_name)
     
     user_rooms = query.all()
     
     result = []
     
-    for user_room in user_rooms:
+    for user_room, room in user_rooms:
         result.append({
             "user_name": user_room.user_name,
             "room_id": user_room.room_id,
-            "room_name": user_room.Rooms.room_name,
-            "room_owner": user_room.Rooms.room_owner,
-            "is_private": user_room.Rooms.is_private
+            "room_name": room.room_name,
+            "room_owner": room.room_owner,
+            "is_private": room.is_private
         })
         
     return jsonify(result)

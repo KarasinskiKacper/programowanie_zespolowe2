@@ -55,11 +55,11 @@ def get_user_info():
         return jsonify({"error": "Missing user_name parameter"}), 400
         
     message_count = Chat_history.query.filter_by(user_name=user_name).count()
-    private_rooms_owned = Rooms.query.filter_by(room_owner=user_name, is_private=True).count()
-    public_rooms_owned = Rooms.query.filter_by(room_owner=user_name, is_private=False).count()
+    private_rooms_owned = Rooms.query.filter(room_owner=user_name, is_private=True).count()
+    public_rooms_owned = Rooms.query.filter(room_owner=user_name, is_private=False).count()
     
-    private_rooms_member = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter_by(Users_room.user_name==user_name, Rooms.is_private==True).count()
-    public_rooms_member = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter_by(Users_room.user_name==user_name, Rooms.is_private==False).count()
+    private_rooms_member = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Users_room.user_name==user_name, Rooms.is_private==True).count()
+    public_rooms_member = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Users_room.user_name==user_name, Rooms.is_private==False).count()
     
     return jsonify({
         "message_count": message_count,
