@@ -99,7 +99,7 @@ def create_room():
     if is_private and not access_key:
         return jsonify({"error": "Missing access_key parameter"}), 400
 
-    new_room = Rooms(room_name=room_name, room_owner=room_owner, is_private=is_private, access_key=access_key)
+    new_room = Rooms(room_name=room_name, room_owner=room_owner, is_private=is_private, access_key=access_key, create_date=db.func.now())
     db.session.add(new_room)
     db.session.commit()
 

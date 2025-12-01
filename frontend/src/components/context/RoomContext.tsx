@@ -14,6 +14,8 @@ interface RoomsContextType {
   setChosenRoom: React.Dispatch<React.SetStateAction<number | null>>;
   userRooms: Object[];
   setUserRooms: React.Dispatch<React.SetStateAction<Object[]>>;
+  isReFetchNeeded: boolean;
+  setIsReFetchNeeded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const RoomsContext = createContext<RoomsContextType | undefined>(undefined);
@@ -29,11 +31,22 @@ export const useRooms = () => {
 export const RoomsProvider = ({ children }: { children: ReactNode }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [chosenRoom, setChosenRoom] = useState<number | null>(null);
-  const [ userRooms, setUserRooms] = useState<Object[]>([]);
-
+  const [userRooms, setUserRooms] = useState<Object[]>([]);
+  const [isReFetchNeeded, setIsReFetchNeeded] = useState<boolean>(false);
 
   return (
-    <RoomsContext.Provider value={{ rooms, setRooms, chosenRoom, setChosenRoom, userRooms, setUserRooms}}>
+    <RoomsContext.Provider
+      value={{
+        rooms,
+        setRooms,
+        chosenRoom,
+        setChosenRoom,
+        userRooms,
+        setUserRooms,
+        isReFetchNeeded,
+        setIsReFetchNeeded,
+      }}
+    >
       {children}
     </RoomsContext.Provider>
   );
