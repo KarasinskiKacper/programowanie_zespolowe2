@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
+from sqlalchemy import func
 
 db = SQLAlchemy()
 
@@ -50,7 +51,7 @@ class Chat_history(db.Model):
     room_id = db.Column(db.Integer, nullable=False)
     user_name = db.Column(db.String(48), nullable=False)
     message = db.Column(db.String(1000), nullable=False)
-    message_date = db.Column(db.DateTime, nullable=False)
+    message_date = db.Column(db.DateTime, nullable=False, server_default=func.now())
     
     def to_dict(self):
         return {

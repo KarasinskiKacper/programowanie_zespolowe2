@@ -3,6 +3,8 @@ import "./globals.css";
 
 import { Inter } from "next/font/google";
 
+import { RoomsProvider } from "../components/context/RoomContext";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -21,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="pl" className={inter.variable}>
       <body>
-        {children}
+        <RoomsProvider>{children}</RoomsProvider>
       </body>
     </html>
   );

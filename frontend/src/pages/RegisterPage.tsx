@@ -21,10 +21,12 @@ const register = async (login: string, password: string) => {
 
 export default function Page() {
   const router = useRouter();
-  const [login, setLogin] = useState("");
+  const [username, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<String>("");
+  const [errorMessageLogin, setErrorMessageLogin] = useState<string>("");
+  const [errorMessagePassword, setErrorMessagePassword] = useState<string>("");
+  const [errorMessageConfirmPassword, setErrorMessageConfirmPassword] = useState<string>("");
 
   return (
     <div className="min-h-screen justify-between items-center overflow-hidden">
@@ -42,14 +44,16 @@ export default function Page() {
           <TextInput
             label="Login"
             placeholder="Wpisz swój login..."
-            value={login}
+            value={username}
             setValue={setLogin}
+            error={errorMessageLogin}
           />
           <TextInput
             label="Hasło"
             placeholder="Wpisz swoje hasło..."
             value={password}
             setValue={setPassword}
+            error={errorMessagePassword}
             isPassword
           />
           <TextInput
@@ -57,25 +61,48 @@ export default function Page() {
             placeholder="Wpisz swoje hasło..."
             value={confirmPassword}
             setValue={setConfirmPassword}
+            error={errorMessageConfirmPassword}
             isPassword
           />
         </div>
-        {errorMessage}
         <Button
           label="Zarejestruj się"
           onClick={async () => {
-            if (login === "") {
-              setErrorMessage("Podaj login");
-            } else if (password === "") {
-              setErrorMessage("Podaj hasło");
-            } else if (confirmPassword === "") {
-              setErrorMessage("Podaj potwierdzenie hasła");
-            } else if (password !== confirmPassword) {
-              setErrorMessage("Podane hasła nie są identyczne");
-            } else if (!(await register(login, password))) {
-              setErrorMessage("Użytkownik o podanym loginie już istnieje");
+            let isDataEntered = true;
+            if (!username) {
+              setErrorMessageLogin("Podaj login");
+              isDataEntered = false;
             } else {
-              setErrorMessage("");
+              setErrorMessageLogin("");
+            }
+
+            if (!password) {
+              setErrorMessagePassword("Podaj hasło");
+              isDataEntered = false;
+            } else {
+              setErrorMessagePassword("");
+            }
+
+            if (!confirmPassword) {
+              setErrorMessageConfirmPassword("Podaj hasło");
+              isDataEntered = false;
+            } else {
+              setErrorMessageConfirmPassword("");
+            }
+
+            if (!isDataEntered) return;
+
+            if (password !== confirmPassword) {
+              setErrorMessageConfirmPassword("Podane hasła są różne");
+              return;
+            }
+
+            setErrorMessageConfirmPassword("");
+
+            if (!(await register(username, password))) {
+              setErrorMessageLogin("Użytkownik o podanym loginie już istnieje");
+            } else {
+              setErrorMessageLogin("");
               router.push("/dashboard");
             }
           }}

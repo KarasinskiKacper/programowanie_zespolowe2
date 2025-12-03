@@ -22,7 +22,8 @@ const login = async (login: string, password: string) => {
 
 export default function Page() {
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessageLogin, setErrorMessageLogin] = useState<string>("");
+  const [errorMessagePassword, setErrorMessagePassword] = useState<string>("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -44,28 +45,41 @@ export default function Page() {
             placeholder="Wpisz swój login..."
             value={username}
             setValue={setUsername}
+            error={errorMessageLogin}
           />
           <TextInput
             label="Hasło"
             placeholder="Wpisz swoje hasło..."
             value={password}
             setValue={setPassword}
-            error={errorMessage}
+            error={errorMessagePassword}
             isPassword
           />
-          {errorMessage}
         </div>
         <Button
           label="Zaloguj się"
           onClick={async () => {
+            let isDataEntered = true;
             if (!username) {
-              setErrorMessage("Podaj login");
-            } else if (!password) {
-              setErrorMessage("Podaj hasło");
-            } else if (!(await login(username, password))) {
-              setErrorMessage("Błędny login lub hasło");
+              setErrorMessageLogin("Podaj login");
+              isDataEntered = false;
             } else {
-              setErrorMessage("");
+              setErrorMessageLogin("");
+            }
+
+            if (!password) {
+              setErrorMessagePassword("Podaj hasło");
+              isDataEntered = false;
+            } else {
+              setErrorMessagePassword("");
+            }
+
+            if (!isDataEntered) return;
+
+            if (!(await login(username, password))) {
+              setErrorMessagePassword("Błędny login lub hasło");
+            } else {
+              setErrorMessagePassword("");
               router.push("/dashboard");
             }
           }}
