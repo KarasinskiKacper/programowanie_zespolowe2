@@ -3,10 +3,19 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from db_objects import Users, db
+from db_objects import db, Rooms, Users_room
 from room import socketio
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
+from app_state import update_user_room_maps
+from user_activity import start_activity_tracking
+
+def initialize_room_users():
+    rooms = Rooms.query.all()
+    for rooms in rooms:
+        users = Users_room.query.filter_by(room_id=rooms.room_id).all()
+        for user in users:
+            update_user_room_maps(rooms.room_id, user.user_name)
 
 def create_app():
     load_dotenv()
@@ -41,4 +50,7 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
+    with app.app_context():
+        initialize_room_users()
+    socketio.start_background_task(start_activity_tracking)
     socketio.run(app, debug=True, host="0.0.0.0", port=5000) # enable access from any IP

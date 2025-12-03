@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Users, db, Users_room, Chat_history, Rooms
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from user_activity import get_online_users as get_online_users_from_app_state
 
 bp = Blueprint('users', __name__, url_prefix='/api')
 
@@ -8,6 +9,16 @@ bp = Blueprint('users', __name__, url_prefix='/api')
 def get_users():
     users = Users.query.all()
     return jsonify([user.to_dict() for user in users])
+
+@bp.route("users/online", methods=['GET'])
+def get_online_users():
+    if request.args.get("user_name"):
+        user_name = request.args.get("user_name")
+        online_users = get_online_users_from_app_state(user_name)
+    else:
+        return jsonify({"error": "Missing user_name parameter"}), 400
+
+    return jsonify(list(online_users))
 
 @bp.route('/user', methods=['GET'])
 def get_user():
@@ -25,7 +36,7 @@ def get_user():
     
     return jsonify(user.to_dict())
 
-@bp.route('/user/change_passowrd', methods=['POST'])
+@bp.route('/user/change_password', methods=['POST'])
 @jwt_required()
 def change_password():
     user_name = get_jwt_identity()

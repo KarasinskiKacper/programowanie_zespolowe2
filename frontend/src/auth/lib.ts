@@ -102,7 +102,7 @@ export async function changePassword(
   old_password: string,
   new_password: string
 ) {
-  const response = await fetch(`${BASE_URL}/user/change_passowrd`, {
+  const response = await fetch(`${BASE_URL}/user/change_password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
