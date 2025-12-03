@@ -18,20 +18,35 @@ export async function getPublicRooms() {
 }
 
 export async function joinPublicRoom(room_id: number, accessToken: string) {
-  const user_name = jwt.decode(accessToken).sub;
-  const response = await fetch(`${BASE_URL}/room/join`, {
+  const response = await fetch(`${BASE_URL}/room/join_public`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ user_name, room_id }),
+    body: JSON.stringify({ room_id }),
   });
   return response;
 }
 
-export async function getUserRooms(userName: string) {
-  const response = await fetch(`${BASE_URL}/user_rooms?user_name=${userName}`, {
+export async function joinPrivateRoom(accessToken: string, access_key: string) {
+  const response = await fetch(`${BASE_URL}/room/join_private`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ access_key }),
+  });
+  return response;
+}
+
+export async function getUserRooms(accessToken: string) {
+  const response = await fetch(`${BASE_URL}/user_rooms?`, {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
   return response.json();
 }
@@ -73,10 +88,11 @@ export async function registerUser(login: string, password: string) {
 }
 
 export async function getProfilData(accessToken: string) {
-  const user_name = jwt.decode(accessToken).sub;
-
-  const response = await fetch(`${BASE_URL}/user/get_info?user_name=${user_name}`, {
+  const response = await fetch(`${BASE_URL}/user/get_info`, {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
   return response.json();
 }
@@ -86,14 +102,13 @@ export async function changePassword(
   old_password: string,
   new_password: string
 ) {
-  const user_name = jwt.decode(accessToken).sub;
-
   const response = await fetch(`${BASE_URL}/user/change_passowrd`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ user_name, old_password, new_password }),
+    body: JSON.stringify({ old_password, new_password }),
   });
   return response.json();
 }
@@ -104,23 +119,25 @@ export async function createRoomRequest(
   is_private: boolean,
   access_key: string
 ) {
-  const room_owner = jwt.decode(accessToken).sub;
   let response;
   if (is_private) {
     response = await fetch(`${BASE_URL}/room/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ room_owner, room_name, is_private, access_key }),
+      body: JSON.stringify({ room_name, is_private, access_key }),
     });
+    await joinPrivateRoom(accessToken, access_key);
   } else {
     response = await fetch(`${BASE_URL}/room/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ room_owner, room_name, is_private }),
+      body: JSON.stringify({ room_name, is_private }),
     });
   }
 

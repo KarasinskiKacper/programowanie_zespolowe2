@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Users, db, Users_room, Chat_history, Rooms
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 bp = Blueprint('users', __name__, url_prefix='/api')
 
@@ -25,14 +26,15 @@ def get_user():
     return jsonify(user.to_dict())
 
 @bp.route('/user/change_passowrd', methods=['POST'])
+@jwt_required()
 def change_password():
+    user_name = get_jwt_identity()
     data = request.json
-    user_name = data.get("user_name")
     old_password = data.get("old_password")
     new_password = data.get("new_password")
 
-    if not user_name or not old_password or not new_password:
-        return jsonify({"error": "Missing user_name or password parameter"}), 400
+    if not old_password or not new_password:
+        return jsonify({"error": "Missing password parameter"}), 400
 
     user = Users.query.filter_by(user_name=user_name).first()
 
@@ -48,11 +50,11 @@ def change_password():
     return jsonify({"message": "Password changed successfully"}), 200
 
 @bp.route('/user/get_info', methods=['GET'])
+@jwt_required()
 def get_user_info():
-    user_name = request.args.get("user_name")
+    #user_name = request.args.get("user_name")
     
-    if not user_name:
-        return jsonify({"error": "Missing user_name parameter"}), 400
+    user_name = get_jwt_identity()
         
     message_count = Chat_history.query.filter_by(user_name=user_name).count()
     private_rooms_owned = Rooms.query.filter(Rooms.room_owner==user_name, Rooms.is_private==True).count()

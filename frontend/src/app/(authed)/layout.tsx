@@ -47,7 +47,7 @@ export default function RootLayout({
 
     const fetchedRooms = await getPublicRooms();
     // const fetchedUserRooms = [];
-    const fetchedUserRooms = await getUserRooms(jwt.decode(cookie).sub);
+    const fetchedUserRooms = await getUserRooms(cookie);
 
     let resultRooms: Object[] = [];
 
