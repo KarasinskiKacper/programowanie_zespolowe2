@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useRooms } from "../components/context/RoomContext";
 import useInterval from "@/components/useInterval";
 import { socket } from "../socket";
+import { io } from "socket.io-client";
 
 import { getCookie } from "../app/actions";
 import {
@@ -64,6 +65,55 @@ export default function Page() {
   const [createRoomNameError, setCreateRoomNameError] = useState("");
   const [createRoomPasswordError, setCreateRoomPasswordError] = useState("");
   const [createRoomConfirmPasswordError, setCreateRoomConfirmPasswordError] = useState("");
+
+  const chosenRoomRef = useRef(chosenRoom);
+
+  useEffect(() => {
+    chosenRoomRef.current = chosenRoom;
+  }, [chosenRoom]);
+
+  const fetchRoomListData = async () => {
+    console.log("fetchRoomListData start");
+
+    const cookie = await getCookie("access_token");
+    if (!cookie) {
+      router.push("/logowanie");
+    } else {
+      setAccessToken(cookie);
+    }
+
+    const fetchedRooms = await getPublicRooms();
+    // const fetchedUserRooms = [];
+    const fetchedUserRooms = await getUserRooms(jwt.decode(cookie).sub);
+
+    let resultRooms: Object[] = [];
+
+    fetchedRooms.forEach((room) => {
+      resultRooms.push({
+        name: room.room_name,
+        id: room.room_id,
+        isPrivate: false,
+        room_owner: room.room_owner,
+      });
+    });
+
+    let resultUserRooms: Object[] = [];
+    fetchedUserRooms.forEach((room) => {
+      if (!resultRooms.find((r) => r["id"] === room.room_id)) {
+        resultRooms.push({
+          name: room.room_name,
+          id: room.room_id,
+          isPrivate: true,
+          room_owner: room.room_owner,
+        }); // TODO change id to name
+      }
+      resultUserRooms.push(room);
+    });
+    setRooms(resultRooms);
+
+    setUserRooms(resultUserRooms);
+    console.log("fetchRoomListData end");
+  };
 
   const sendCreateRoomRequest = async () => {
     let isProperData = true;
@@ -121,6 +171,7 @@ export default function Page() {
       router.push("/logowanie");
     } else {
       setAccessToken(cookie);
+      return cookie;
     }
   };
 
@@ -154,28 +205,33 @@ export default function Page() {
   };
 
   const fetchMembers = async () => {
-    if (chosenRoom !== null && chosenRoom !== undefined) {
-      const fetchedMembers = await getChatMembers(chosenRoom);
+    console.log("fetchMembers", chosenRoomRef.current);
+    if (chosenRoomRef.current !== null && chosenRoomRef.current !== undefined) {
+      console.log("if fetchMembers");
+
+      const fetchedMembers = await getChatMembers(chosenRoomRef.current);
       let resultMembers: Object[] = [];
 
-      const chosenRoomData = rooms.find((room) => room.id === chosenRoom);
-      const username = jwt.decode(accessToken).sub;
+      const token = accessToken ? accessToken : await fetchCookie();
+      const username = jwt.decode(token).sub;
+      const currentRooms = rooms ? rooms : await getUserRooms(username);
+
+      const chosenRoomData = currentRooms.find((room) => room.id === chosenRoomRef.current);
 
       fetchedMembers.forEach((fetchedMember) => {
         resultMembers.push({
           username: fetchedMember.user_name,
+          //qqqqqqqqq
           kickable: username === chosenRoomData.room_owner && username !== fetchedMember.user_name,
           leaveable: username !== chosenRoomData.room_owner && username === fetchedMember.user_name,
         });
       });
 
-      console.log(resultMembers);
-
       setMembers(resultMembers);
     }
   };
 
-  const fetchData = async () => {
+  const fetchRoomData = async () => {
     await fetchMessages();
     await fetchMembers();
   };
@@ -185,8 +241,10 @@ export default function Page() {
   };
 
   const onDisconnect = () => {
+    console.log("onDisconnect");
+
     setIsConnected(false);
-    setChosenRoom(null);
+    // setChosenRoom(null);
   };
 
   function watchdog() {
@@ -201,6 +259,8 @@ export default function Page() {
   const joinRoom = async (room_id: number) => {
     const user_name = jwt.decode(accessToken).sub;
     if (chosenRoom !== room_id) {
+      console.log("joinPublicRoom");
+
       joinPublicRoom(room_id, accessToken); // TODO fix 400 on joining room
     }
 
@@ -208,7 +268,9 @@ export default function Page() {
       socket.emit("leave", { room_id: chosenRoom, user_name });
     }
 
-    setChosenRoom(room_id);
+    if (room_id != null) {
+      setChosenRoom(room_id);
+    }
 
     socket.emit("join", { room_id, user_name });
   };
@@ -265,6 +327,20 @@ export default function Page() {
     console.log(`Error: ${data.message}`);
   };
 
+  const onUserListUpdated = () => {
+    console.log("onUserListUpdated");
+    console.log(rooms);
+
+    fetchRoomData();
+  };
+
+  const onRoomListUpdated = () => {
+    console.log("onRoomListUpdated");
+    // setTimeout(() => {
+    fetchRoomListData();
+    // }, 100);
+  };
+
   useInterval(
     () => {
       watchdog();
@@ -273,14 +349,16 @@ export default function Page() {
   );
 
   useEffect(() => {
-    if (shownRooms.length === 0) {
-      setShownRooms(rooms);
-    }
+    setShownRooms(rooms);
   }, [rooms]);
 
   useEffect(() => {
     fetchCookie();
-    fetchData();
+    if (chosenRoom !== null) {
+      // setTimeout(() => {
+      fetchRoomData();
+      // }, 100);
+    }
   }, [chosenRoom]);
 
   useEffect(() => {
@@ -298,15 +376,12 @@ export default function Page() {
     socket.on("user_online", onUserOnline);
 
     // response on API user_room table update
-    socket.on("user_list_updated", onUserListUpdate);
 
     // response on error
     socket.on("error", onError);
 
-    // response on message
-    // socket.on('new_message', (data) => {
-    //     console.log(`[User ${data.user_name}]: ${data.message}`);
-    // });
+    socket.on("user_list_updated", onUserListUpdated);
+    socket.on("room_list_updated", onRoomListUpdated);
 
     if (socket.connected) {
       onConnect();
@@ -320,8 +395,10 @@ export default function Page() {
       socket.off("user_join", onUserJoin);
       socket.off("user_left", onUserLeft);
       socket.off("user_online", onUserOnline);
-      socket.off("user_list_updated", onUserListUpdate);
+
       socket.off("error", onError);
+      socket.off("user_list_updated", onUserListUpdated);
+      socket.off("room_list_updated", onRoomListUpdated);
     };
   }, []);
 
@@ -384,86 +461,85 @@ const LeftAside = ({
   joinRoom: any;
   payload?: any;
 }) => {
-  if (aside === "ROOMS")
-    return (
-      <div className="w-80 self-stretch p-4 border-r-2 border-[#6D66D2] inline-flex flex-col justify-start items-start gap-4 overflow-hidden">
-        <Button
-          label="Nowy pokój"
-          onClick={() => {
-            payload.setWorkspace("CREATE_ROOM");
-          }}
-          size="small"
-        />
-        <Button
-          label="Dołącz do pokoju"
-          onClick={() => {
-            payload.setWorkspace("JOIN_ROOM");
-          }}
-          type="outline"
-          size="small"
-        />
-        <div className="self-stretch flex-1 flex flex-col justify-start items-start gap-8">
-          <div className="self-stretch flex flex-col justify-start items-start gap-2">
-            <div className="justify-start text-[#6D66D2] text-xl font-bold font-['Inter']">
-              Pokoje publiczne
-            </div>
-            <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
-              {payload.shownRooms?.map((room, index) => {
-                if (!room.isPrivate) {
-                  return (
-                    <RoomItem
-                      key={index}
-                      name={room.name}
-                      onClick={() => {
-                        joinRoom(room.id);
-                      }}
-                    />
-                  );
-                }
-              })}
-            </div>
-            <div className="justify-start text-[#6D66D2] text-xl font-bold font-['Inter']">
-              Pokoje prywatne
-            </div>
-            <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
-              {payload.shownRooms?.map((room, index) => {
-                if (room.isPrivate) {
-                  return (
-                    <RoomItem
-                      key={index}
-                      name={room.name}
-                      onClick={() => {
-                        joinRoom(room.id);
-                      }}
-                    />
-                  );
-                }
-              })}
-            </div>
+  return (
+    <div className="w-80 self-stretch p-4 border-r-2 border-[#6D66D2] inline-flex flex-col justify-start items-start gap-4 overflow-hidden">
+      <Button
+        label="Nowy pokój"
+        onClick={() => {
+          payload.setWorkspace("CREATE_ROOM");
+        }}
+        size="small"
+      />
+      <Button
+        label="Dołącz do pokoju"
+        onClick={() => {
+          payload.setWorkspace("JOIN_ROOM");
+        }}
+        type="outline"
+        size="small"
+      />
+      <div className="self-stretch flex-1 flex flex-col justify-start items-start gap-8">
+        <div className="self-stretch flex flex-col justify-start items-start gap-2">
+          <div className="justify-start text-[#6D66D2] text-xl font-bold font-['Inter']">
+            Pokoje publiczne
+          </div>
+          <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
+            {payload.shownRooms?.map((room, index) => {
+              if (!room.isPrivate) {
+                return (
+                  <RoomItem
+                    key={index}
+                    name={room.name}
+                    onClick={() => {
+                      joinRoom(room.id);
+                    }}
+                  />
+                );
+              }
+            })}
+          </div>
+          <div className="justify-start text-[#6D66D2] text-xl font-bold font-['Inter']">
+            Pokoje prywatne
+          </div>
+          <div className="self-stretch pl-4 flex flex-col justify-start items-start gap-2">
+            {payload.shownRooms?.map((room, index) => {
+              if (room.isPrivate) {
+                return (
+                  <RoomItem
+                    key={index}
+                    name={room.name}
+                    onClick={() => {
+                      joinRoom(room.id);
+                    }}
+                  />
+                );
+              }
+            })}
           </div>
         </div>
-        <div className="self-stretch p-2 outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
-          <input
-            type="text"
-            placeholder="Szukaj..."
-            // value={payload.shownRoomsSearch}
-            // onChange={(e) => payload.setShownRoomsSearch(e.target.value)}
-            onChange={(e) => {
-              if (e.target.value === "") {
-                payload.setShownRooms(payload.rooms);
-              } else {
-                const lowerSearch = e.target.value.toLowerCase();
-                const filteredRooms = payload.rooms.filter((room) =>
-                  room.name.toLowerCase().includes(lowerSearch)
-                );
-                payload.setShownRooms(filteredRooms);
-              }
-            }}
-          />
-          <Icon name="loop" className="w-8 h-8 text-[#6D66D2]" />
-        </div>
       </div>
-    );
+      <div className="self-stretch p-2 outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
+        <input
+          type="text"
+          placeholder="Szukaj..."
+          // value={payload.shownRoomsSearch}
+          // onChange={(e) => payload.setShownRoomsSearch(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value === "") {
+              payload.setShownRooms(payload.rooms);
+            } else {
+              const lowerSearch = e.target.value.toLowerCase();
+              const filteredRooms = payload.rooms.filter((room) =>
+                room.name.toLowerCase().includes(lowerSearch)
+              );
+              payload.setShownRooms(filteredRooms);
+            }
+          }}
+        />
+        <Icon name="loop" className="w-8 h-8 text-[#6D66D2]" />
+      </div>
+    </div>
+  );
 };
 const Workspace = ({
   workspace,

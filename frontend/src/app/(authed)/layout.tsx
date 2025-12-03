@@ -37,7 +37,7 @@ export default function RootLayout({
     isReFetchNeeded,
     setIsReFetchNeeded,
   } = useRooms();
-  const fetchData = async () => {
+  const fetchRoomListData = async () => {
     const cookie = await getCookie("access_token");
     if (!cookie) {
       router.push("/logowanie");
@@ -78,7 +78,7 @@ export default function RootLayout({
   };
 
   useEffect(() => {
-    fetchData();
+    fetchRoomListData();
   }, [accessToken]);
 
   useEffect(() => {
