@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Rooms, db, Users_room
 from room import socketio
-from app_state import update_user_room_maps, remove_room
+from app_state import room_users, update_user_room_maps, remove_room
 
 bp = Blueprint('rooms', __name__, url_prefix='/api')
 
