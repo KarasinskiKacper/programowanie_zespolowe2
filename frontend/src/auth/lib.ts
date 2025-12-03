@@ -98,7 +98,7 @@ export async function changePassword(
   return response.json();
 }
 
-export async function createRoom(
+export async function createRoomRequest(
   accessToken: string,
   room_name: string,
   is_private: boolean,
@@ -123,6 +123,19 @@ export async function createRoom(
       body: JSON.stringify({ room_owner, room_name, is_private }),
     });
   }
+
+  return response.json();
+}
+
+export async function joinRoomRequest(accessToken: string, room_name: string, access_key: string) {
+  const user_name = jwt.decode(accessToken).sub;
+  const response = await fetch(`${BASE_URL}/room/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ user_name, room_name, access_key }),
+  });
 
   return response.json();
 }
