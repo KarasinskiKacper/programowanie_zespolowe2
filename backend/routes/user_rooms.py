@@ -1,19 +1,15 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Users_room, db, Rooms
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 bp = Blueprint('user_rooms', __name__, url_prefix='/api')
 
 @bp.route('/user_rooms', methods=['GET'])
+@jwt_required()
 def get_user_rooms():
-    if not request.args.get("user_name"):
-        return jsonify({"error": "Missing user_name parameter"}), 400
-    
-    user_name = request.args.get("user_name")
-    
+    user_name = get_jwt_identity()
     query = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Users_room.user_name == user_name)
-    
     user_rooms = query.all()
-    
     result = []
     
     for user_room, room in user_rooms:
@@ -42,9 +38,10 @@ def get_user_list():
     return jsonify([user_list.to_dict() for user_list in user_lists])
 
 @bp.route('/user_kick', methods=['POST'])
+@jwt_required()
 def kick_user():
+    user_name = get_jwt_identity()
     data = request.json
-    user_name = data.get("user_name")
     room_id = data.get("room_id")
     user_to_kick = data.get("user_to_kick")
     
