@@ -112,7 +112,7 @@ def create_room():
 
     update_user_room_maps(new_room.room_id, room_owner)
 
-    socketio.emit("room_list_updated", broadcast=True)
+    socketio.emit("room_list_updated")
     
     return jsonify({"message": "Room created successfully"}), 200
 
@@ -135,6 +135,6 @@ def delete_room():
 
     remove_room(room_id)
 
-    socketio.emit("room_list_updated", broadcast=True)
+    socketio.emit("room_list_updated")
 
     return jsonify({"message": "Room deleted successfully"}), 200
