@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Rooms, db, Users_room
 from room import socketio
-from app_state import room_users, update_user_room_maps, remove_room
+from app_state import room_users as room_users_app_state, update_user_room_maps, remove_room
 
 bp = Blueprint('rooms', __name__, url_prefix='/api')
 
@@ -86,7 +86,7 @@ def leave_room():
 
     update_user_room_maps(room_id, user_name, remove=True)
 
-    if len(room_users[room_id]) == 0:
+    if len(room_users_app_state.get(room_id, set())) == 0:
         remove_room(room_id)
 
     socketio.emit("user_list_updated", to=str(room_id))
