@@ -15,7 +15,8 @@ import {
   getChatMessages,
   getChatMembers,
   joinPublicRoom,
-  createRoom,
+  createRoomRequest,
+  joinRoomRequest,
   getPublicRooms,
   getUserRooms,
 } from "../auth/lib";
@@ -54,7 +55,9 @@ export default function Page() {
   const [members, setMembers] = useState<Object[]>([]);
 
   const [joinRoomName, setJoinRoomName] = useState("");
+  const [joinRoomNameError, setJoinRoomNameError] = useState("");
   const [joinRoomPassword, setJoinRoomPassword] = useState("");
+  const [joinRoomPasswordError, setJoinRoomPasswordError] = useState("");
 
   const [createRoomName, setCreateRoomName] = useState("");
   const [createRoomPassword, setCreateRoomPassword] = useState("");
@@ -64,6 +67,38 @@ export default function Page() {
   const [createRoomNameError, setCreateRoomNameError] = useState("");
   const [createRoomPasswordError, setCreateRoomPasswordError] = useState("");
   const [createRoomConfirmPasswordError, setCreateRoomConfirmPasswordError] = useState("");
+
+  const sendJoinRoomRequest = async () => {
+    let isProperData = true;
+    if (joinRoomName === "") {
+      setJoinRoomNameError("Podaj nazwę pokoju");
+      isProperData = false;
+    } else {
+      setJoinRoomNameError("");
+    }
+    if (joinRoomPassword === "") {
+      setJoinRoomPasswordError("Podaj klucz");
+      isProperData = false;
+    } else {
+      setJoinRoomPasswordError("");
+    }
+
+    if (!isProperData) {
+      return isProperData;
+    }
+
+    if (!isProperData) {
+      return isProperData;
+    }
+
+    const response = await joinRoomRequest(accessToken, joinRoomName, joinRoomPassword);
+
+    if (response?.message === "Room created successfully") return true;
+    else {
+      setJoinRoomPasswordError("Błędny klucz");
+      return false;
+    }
+  };
 
   const sendCreateRoomRequest = async () => {
     let isProperData = true;
@@ -101,7 +136,7 @@ export default function Page() {
       return isProperData;
     }
 
-    const response = await createRoom(
+    const response = await createRoomRequest(
       accessToken,
       createRoomName,
       createRoomIsPrivate,
@@ -348,10 +383,6 @@ export default function Page() {
           setNewMessage,
           sendMessage,
           chosenRoom,
-          joinRoomName,
-          joinRoomPassword,
-          setJoinRoomName,
-          setJoinRoomPassword,
           createRoomName,
           createRoomPassword,
           createRoomConfirmPassword,
@@ -368,6 +399,14 @@ export default function Page() {
           setCreateRoomPasswordError,
           setCreateRoomConfirmPasswordError,
           setIsReFetchNeeded,
+          joinRoomName,
+          joinRoomPassword,
+          joinRoomNameError,
+          joinRoomPasswordError,
+          setJoinRoomName,
+          setJoinRoomPassword,
+          setJoinRoomNameError,
+          setJoinRoomPasswordError,
         }}
       />
       <RightAside aside={rightAside} payload={{ members }} />
@@ -532,14 +571,23 @@ const Workspace = ({
           <TextInput
             label="Nazwa pokoju"
             placeholder="Wpisz nazwę pokoju"
-            value={""}
-            setValue={() => {}}
+            value={payload.joinRoomName}
+            setValue={payload.setJoinRoomName}
+            error={payload.joinRoomNameError}
           />
-          <TextInput label="Hasło" placeholder="Wpisz hasło" value={""} setValue={() => {}} />
+          <TextInput
+            label="Klucz"
+            placeholder="Wpisz Klucz"
+            value={payload.joinRoomPassword}
+            setValue={payload.setJoinRoomPassword}
+            error={payload.joinRoomPasswordError}
+          />
           <Button
             label="Wejdź"
-            onClick={() => {
-              payload.setWorkspace("ROOM_CHAT");
+            onClick={async () => {
+              if (await sendJoinRoomRequest) {
+                location.reload();
+              }
             }}
           />
           <Button
@@ -733,48 +781,46 @@ const RightAside = ({
 };
 
 const RoomItem = ({ name, onClick }: { name: string; onClick: () => void }) => {
-    return (
-        <div
-            className="self-stretch inline-flex justify-between items-center hover:bg-black/5 hover:cursor-pointer"
-            onClick={onClick}
-        >
-            <div className="justify-start text-black text-xl font-light font-['Inter']">
-                {name}
-            </div>
-            <Icon name="play" className="w-4 h-4 text-[#ACD266]" />
-        </div>
-    );
+  return (
+    <div
+      className="self-stretch inline-flex justify-between items-center hover:bg-black/5 hover:cursor-pointer"
+      onClick={onClick}
+    >
+      <div className="justify-start text-black text-xl font-light font-['Inter']">{name}</div>
+      <Icon name="play" className="w-4 h-4 text-[#ACD266]" />
+    </div>
+  );
 };
 
 const Message = ({
-    author,
-    time,
-    date,
-    content,
+  author,
+  time,
+  date,
+  content,
 }: {
-    author: string;
-    time: string;
-    date: string;
-    content: string;
+  author: string;
+  time: string;
+  date: string;
+  content: string;
 }) => {
-    return (
-        <div className="self-stretch p-4 inline-flex justify-start items-start gap-4 overflow-hidden">
-            <div className="w-16 h-16 bg-[#ACD266] rounded-[32px] flex justify-center items-center gap-2.5 overflow-hidden">
-                <Icon name="avatar" className="w-16 h-16 text-[#6D66D2]" />
-            </div>
-            <div className="inline-flex flex-col justify-start items-start">
-                <div className="inline-flex justify-start items-center gap-4">
-                    <div className="justify-start text-[#6D66D2] text-2xl font-bold font-['Inter']">
-                        {author}
-                    </div>
-                    <div className="justify-start text-stone-500 text-xl font-normal font-['Inter']">
-                        {date}, {time}
-                    </div>
-                </div>
-                <div className="justify-start text-slate-900 text-2xl font-normal font-['Inter']">
-                    {content}
-                </div>
-            </div>
+  return (
+    <div className="self-stretch p-4 inline-flex justify-start items-start gap-4 overflow-hidden">
+      <div className="w-16 h-16 bg-[#ACD266] rounded-[32px] flex justify-center items-center gap-2.5 overflow-hidden">
+        <Icon name="avatar" className="w-16 h-16 text-[#6D66D2]" />
+      </div>
+      <div className="inline-flex flex-col justify-start items-start">
+        <div className="inline-flex justify-start items-center gap-4">
+          <div className="justify-start text-[#6D66D2] text-2xl font-bold font-['Inter']">
+            {author}
+          </div>
+          <div className="justify-start text-stone-500 text-xl font-normal font-['Inter']">
+            {date}, {time}
+          </div>
         </div>
-    );
+        <div className="justify-start text-slate-900 text-2xl font-normal font-['Inter']">
+          {content}
+        </div>
+      </div>
+    </div>
+  );
 };
