@@ -5,36 +5,34 @@ from user_activity import get_online_users as get_online_users_from_app_state
 
 bp = Blueprint('users', __name__, url_prefix='/api')
 
-@bp.route('/users', methods=['GET'])
-def get_users():
-    users = Users.query.all()
-    return jsonify([user.to_dict() for user in users])
+# @bp.route('/users', methods=['GET'])
+# def get_users():
+#     users = Users.query.all()
+#     return jsonify([user.to_dict() for user in users])
 
 @bp.route("users/online", methods=['GET'])
+@jwt_required()
 def get_online_users():
-    if request.args.get("user_name"):
-        user_name = request.args.get("user_name")
-        online_users = get_online_users_from_app_state(user_name)
-    else:
-        return jsonify({"error": "Missing user_name parameter"}), 400
+    user_name = get_jwt_identity()
+    online_users = get_online_users_from_app_state(user_name)
 
     return jsonify(list(online_users))
 
-@bp.route('/user', methods=['GET'])
-def get_user():
-    query = Users.query
-    if request.args.get("user_name"):
-        user_name = request.args.get("user_name")
-        query = query.filter_by(user_name=user_name)
-    else:
-        return jsonify({"error": "Missing user_name parameter"}), 400
+# @bp.route('/user', methods=['GET'])
+# def get_user():
+#     query = Users.query
+#     if request.args.get("user_name"):
+#         user_name = request.args.get("user_name")
+#         query = query.filter_by(user_name=user_name)
+#     else:
+#         return jsonify({"error": "Missing user_name parameter"}), 400
     
-    user = query.first()
+#     user = query.first()
 
-    if user is None:
-        return jsonify({"error": "User not found"}), 404
+#     if user is None:
+#         return jsonify({"error": "User not found"}), 404
     
-    return jsonify(user.to_dict())
+#     return jsonify(user.to_dict())
 
 @bp.route('/user/change_password', methods=['POST'])
 @jwt_required()
