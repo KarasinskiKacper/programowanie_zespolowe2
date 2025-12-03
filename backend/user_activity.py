@@ -7,7 +7,7 @@ def set_user_online(user_name: str) -> None:
     online_users.add(user_name)
 
     for room_id in user_rooms.get(user_name, set()):
-        socketio.emit("user_online", {"user_name": user_name}, to=str(room_id))
+        socketio.emit("user_online", {"user_name": user_name}, to=room_id)
 
 def update_user_last_seen(user_name: str) -> None:
     set_user_online(user_name)
@@ -29,7 +29,7 @@ def start_activity_tracking():
                 del user_last_seen[user]
                 online_users.discard(user)
                 for room_id in user_rooms.get(user, set()):
-                    socketio.emit("user_offline", {"user_name": user}, to=str(room_id))
+                    socketio.emit("user_offline", {"user_name": user}, to=room_id)
 
         time.sleep(1)
                     

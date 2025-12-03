@@ -57,7 +57,7 @@ def join_room():
 
     update_user_room_maps(room_id, user_name)
 
-    socketio.emit("user_list_updated", to=str(room_id))
+    socketio.emit("user_list_updated", to=room_id)
 
     return jsonify({"message": "Joined room successfully"}), 200
 
@@ -88,7 +88,7 @@ def leave_room():
     if len(room_users_app_state.get(room_id, set())) == 0:
         remove_room(room_id)
 
-    socketio.emit("user_list_updated", to=str(room_id))
+    socketio.emit("user_list_updated", to=room_id)
 
     return jsonify({"message": "Left room successfully"}), 200
 
