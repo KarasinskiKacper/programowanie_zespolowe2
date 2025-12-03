@@ -113,6 +113,8 @@ def create_room():
 
     update_user_room_maps(new_room.room_id, room_owner)
 
+    socketio.emit("room_list_updated", broadcast=True)
+    
     return jsonify({"message": "Room created successfully"}), 200
 
 @bp.route('/room/delete', methods=['POST'])
@@ -133,5 +135,7 @@ def delete_room():
     db.session.commit()
 
     remove_room(room_id)
+
+    socketio.emit("room_list_updated", broadcast=True)
 
     return jsonify({"message": "Room deleted successfully"}), 200
