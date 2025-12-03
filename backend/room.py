@@ -1,7 +1,7 @@
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import emit, join_room, leave_room
 from db_objects import Chat_history, db, Rooms, Users_room
-
-socketio = SocketIO(cors_allowed_origins="*")
+from user_activity import update_user_last_seen
+from app_state import socketio
 
 @socketio.on('join')
 def handle_join(data):
@@ -91,12 +91,4 @@ def handle_watchdog(data):
                        'code': 3})
         return
     
-    query = Users_room.query.filter_by(user_name=user_name)
-
-    user_rooms = query.all()
-    rooms_list = [user_room.room_id for user_room in user_rooms]
-
-    for room_id in rooms_list:
-        emit('user_online', {
-            "user_name": user_name,
-        }, to=str(room_id))
+    update_user_last_seen(user_name)
