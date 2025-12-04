@@ -7,6 +7,7 @@ const TextInput = ({
   setValue,
   isPassword = false,
   error = "",
+  success = "",
   disabled = false,
 }: {
   label: string;
@@ -15,6 +16,7 @@ const TextInput = ({
   setValue: any;
   isPassword?: boolean;
   error?: string;
+  success?: string;
   disabled?: boolean;
 }) => {
   return (
@@ -32,6 +34,11 @@ const TextInput = ({
       </div>
       {error && (
         <div className="justify-start text-red-600 text-xl font-normal font-['Inter']">{error}</div>
+      )}
+      {success && (
+        <div className="justify-start text-green-600 text-xl font-normal font-['Inter']">
+          {success}
+        </div>
       )}
     </div>
   );

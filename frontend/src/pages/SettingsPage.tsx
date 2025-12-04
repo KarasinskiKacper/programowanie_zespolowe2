@@ -110,7 +110,12 @@ export default function Page() {
           placeholder="Powtórz nowe hasło"
           value={confirmNewPassword}
           setValue={setConfirmNewPassword}
-          error={confirmNewPasswordError}
+          error={
+            confirmNewPasswordError !== "Pomyślnie zmieniono hasło" ? confirmNewPasswordError : ""
+          }
+          success={
+            confirmNewPasswordError === "Pomyślnie zmieniono hasło" ? confirmNewPasswordError : ""
+          }
           isPassword
         />
         <Button

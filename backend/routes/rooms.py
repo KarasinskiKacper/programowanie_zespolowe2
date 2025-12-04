@@ -139,6 +139,12 @@ def create_room():
     
     if is_private and not access_key:
         return jsonify({"error": "Missing access_key parameter"}), 400
+    
+    if access_key is not None:
+        existing_room = Rooms.query.filter_by(access_key=access_key).first()
+    
+        if existing_room is not None:
+            return jsonify({"error": "Room with this access key already exists"}), 400
 
     new_room = Rooms(room_name=room_name, room_owner=room_owner, is_private=is_private, access_key=access_key, create_date=db.func.now())
     db.session.add(new_room)
@@ -173,3 +179,37 @@ def delete_room():
     socketio.emit("room_list_updated")
 
     return jsonify({"message": "Room deleted successfully"}), 200
+
+@bp.route('/room/edit', methods=['POST'])
+@jwt_required()
+def edit_room():
+    data = request.json
+    room_owner = get_jwt_identity()
+    room_id = data.get("room_id")
+    new_access_key = data.get("new_access_key")
+    is_private = data.get("is_private")
+    new_name = data.get("new_name")
+
+    if not room_id:
+        return jsonify({"error": "Missing room_id parameter"}), 400
+
+    room = Rooms.query.filter_by(room_id=room_id).first()
+
+    if room is None:
+        return jsonify({"error": "Room not found"}), 404
+    
+    if room.room_owner != room_owner:
+        return jsonify({"error": "You are not the owner of this room"}), 403
+    
+    if is_private:
+        room.is_private = True
+    else:
+        room.is_private = False
+    
+    room.name = new_name
+
+    room.access_key = new_access_key
+
+    db.session.commit()
+
+    return jsonify({"message": "Room edited successfully"}), 200
