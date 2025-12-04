@@ -83,7 +83,8 @@ export default function RootLayout({
 
   useEffect(() => {
     if (chosenRoom !== null && chosenRoom !== undefined) {
-      setTopIcon(rooms.find((room) => room.id === chosenRoom)?.isPrivate ? "lock" : "unlock");
+      const tmp = rooms;
+      setTopIcon(tmp.find((room) => room["id"] === chosenRoom)?.["isPrivate"] ? "lock" : "unlock");
     } else {
       setTopIcon("");
     }

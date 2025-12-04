@@ -41,7 +41,7 @@ export async function joinPrivateRoom(accessToken: string, access_key: string) {
   return response;
 }
 
-export async function getUserRooms(accessToken: string) {
+export async function getUserRooms(accessToken: any) {
   const response = await fetch(`${BASE_URL}/user_rooms?`, {
     method: "GET",
     headers: {

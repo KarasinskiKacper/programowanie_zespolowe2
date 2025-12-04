@@ -9,7 +9,7 @@ interface Room {
 
 interface RoomsContextType {
   rooms: Room[];
-  setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
+  setRooms: React.Dispatch<React.SetStateAction<any[]>>;
   chosenRoom: number | null;
   setChosenRoom: React.Dispatch<React.SetStateAction<number | null>>;
   userRooms: Object[];

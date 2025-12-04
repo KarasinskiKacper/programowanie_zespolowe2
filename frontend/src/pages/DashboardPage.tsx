@@ -323,7 +323,7 @@ export default function Page() {
   const onRoomListUpdated = () => {
     console.log("onRoomListUpdated");
     // setTimeout(() => {
-    fetchRoomListData();
+    // fetchRoomListData();
     // }, 100);
   };
 
@@ -435,6 +435,7 @@ export default function Page() {
           setJoinRoomPassword,
           setJoinRoomNameError,
           setJoinRoomPasswordError,
+          sendJoinRoomRequest,
         }}
       />
       <RightAside aside={rightAside} payload={{ members }} />
@@ -612,7 +613,7 @@ const Workspace = ({
           <Button
             label="Wejdź"
             onClick={async () => {
-              if (await sendJoinRoomRequest) {
+              if (await payload.sendJoinRoomRequest) {
                 location.reload();
               }
             }}
