@@ -41,6 +41,30 @@ export async function joinPrivateRoom(accessToken: string, access_key: string) {
   return response;
 }
 
+export async function leaveRoom(room_id: number, accessToken: string) {
+  const response = await fetch(`${BASE_URL}/room/leave`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ room_id }),
+  });
+  return response;
+}
+
+export async function kickUser(room_id: number, accessToken: string, user_to_kick: string) {
+  const response = await fetch(`${BASE_URL}/user_kick`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ room_id, user_to_kick }),
+  });
+  return response;
+}
+
 export async function getUserRooms(accessToken: any) {
   const response = await fetch(`${BASE_URL}/user_rooms?`, {
     method: "GET",
@@ -156,3 +180,13 @@ export async function createRoomRequest(
 
 //   return response.json();
 // }
+
+export async function getOnlineUsers(accessToken: string) {
+  const response = await fetch(`${BASE_URL}/users/online`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response.json();
+}

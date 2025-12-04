@@ -89,7 +89,7 @@ def join_private_room():
     db.session.add(user_room)
     db.session.commit()
     
-    socketio.emit("user_list_updated", to=str(room.room_id))
+    socketio.emit("user_list_updated", to=room.room_id)
 
     return jsonify({"message": "Joined room successfully"}), 200
 

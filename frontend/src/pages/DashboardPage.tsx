@@ -20,6 +20,9 @@ import {
   joinPrivateRoom,
   getPublicRooms,
   getUserRooms,
+  getOnlineUsers,
+  kickUser,
+  leaveRoom,
 } from "../auth/lib";
 import jwt from "jsonwebtoken";
 
@@ -73,6 +76,8 @@ export default function Page() {
   const [createRoomNameError, setCreateRoomNameError] = useState("");
   const [createRoomPasswordError, setCreateRoomPasswordError] = useState("");
   const [createRoomConfirmPasswordError, setCreateRoomConfirmPasswordError] = useState("");
+
+  const [activeUsers, setActiveUsers] = useState([]);
 
   const sendJoinRoomRequest = async () => {
     console.log("sendJoinRoomRequest1");
@@ -149,8 +154,8 @@ export default function Page() {
       }
       resultUserRooms.push(room);
     });
-    console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultRooms}`);
-    console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultUserRooms}`);
+    // console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultRooms}`);
+    // console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultUserRooms}`);
     setRooms(resultRooms);
 
     setUserRooms(resultUserRooms);
@@ -246,10 +251,7 @@ export default function Page() {
   };
 
   const fetchMembers = async () => {
-    console.log("fetchMembers", chosenRoom);
     if (chosenRoom !== null && chosenRoom !== undefined) {
-      console.log("if fetchMembers");
-
       const fetchedMembers = await getChatMembers(chosenRoom);
       let resultMembers: Object[] = [];
 
@@ -294,7 +296,6 @@ export default function Page() {
       socket.emit("watchdog", {
         user_name: user_name,
       });
-      console.log("watchdog");
     }
   }
 
@@ -356,12 +357,13 @@ export default function Page() {
   // const onUserLeft = (data) => {
   //   console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
   // };
-  const onUserActivityChange = (data) => {
-    console.log(`[Dashboard/onUserOnline/chosenRoom]`, chosenRoom);
-    console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
-  };
-  const onUserListUpdate = () => {
-    console.log(`user list updated`);
+  const onUserActivityChange = async (data) => {
+    console.log(`${data.user_name} ActivityChange`);
+    setTimeout(async () => {
+      const onlineUsers = await getOnlineUsers(accessToken);
+      console.log(onlineUsers);
+      setActiveUsers(onlineUsers);
+    }, 200);
   };
 
   const onError = (data) => {
@@ -503,7 +505,7 @@ export default function Page() {
           setJoinPrivateRoomPasswordError,
         }}
       />
-      <RightAside aside={rightAside} payload={{ members }} />
+      <RightAside aside={rightAside} payload={{ members, activeUsers, accessToken, chosenRoom }} />
     </div>
   );
 }
@@ -674,6 +676,7 @@ const Workspace = ({
             value={payload.joinRoomPassword}
             setValue={payload.setJoinRoomPassword}
             error={payload.joinRoomPasswordError}
+            isPassword
           />
           <Button
             label="Wejdź"
@@ -711,6 +714,7 @@ const Workspace = ({
             setValue={payload.setCreateRoomPassword}
             disabled={!payload.createRoomIsPrivate}
             error={payload.createRoomPasswordError}
+            isPassword
           />
           <TextInput
             label="Powtórz klucz (dla pokoju prywatnego)"
@@ -719,6 +723,7 @@ const Workspace = ({
             setValue={payload.setCreateRoomConfirmPassword}
             disabled={!payload.createRoomIsPrivate}
             error={payload.createRoomConfirmPasswordError}
+            isPassword
           />
           <div>
             <input
@@ -842,23 +847,37 @@ const RightAside = ({
                   className="self-stretch text-black text-xl font-light font-['Inter']"
                 >
                   <div className="flex-1 justify-start items-center gap-2">
-                    <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
+                    {jwt.decode(payload.accessToken).sub === member.username ||
+                    payload?.activeUsers?.find((activeUser) => activeUser === member.username) ? (
+                      <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
+                    ) : (
+                      <div className="h-4 w-4 bg-[#ff0000] rounded-full"></div>
+                    )}
+
                     {member.username}
                   </div>
                   <div className="h-8 w-4 items-center">
                     {member.leaveable && (
                       <div
                         className="h-1 w-4 bg-[#ACD266] rounded-full"
-                        onClick={() => {
-                          console.log("leave");
+                        onClick={async () => {
+                          await leaveRoom(payload.chosenRoom, payload.accessToken);
+                          location.reload();
                         }}
                       ></div>
                     )}
                     {member.kickable && (
                       <div
                         className="h-1 w-4 bg-[#ACD266] rounded-full"
-                        onClick={() => {
-                          console.log("kick");
+                        onClick={async () => {
+                          console.log(
+                            "kickUser",
+                            payload.chosenRoom,
+                            payload.accessToken,
+                            member.username
+                          );
+
+                          await kickUser(payload.chosenRoom, payload.accessToken, member.username);
                         }}
                       ></div>
                     )}

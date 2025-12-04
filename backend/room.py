@@ -7,6 +7,7 @@ from app_state import socketio
 def handle_join(data):
     room_id = data['room_id']
     user_name = data['user_name']
+    print('join', room_id, user_name)
     
     if not user_name or not room_id:
         emit('error', {'message': 'Missing user_name or room_id',
@@ -33,6 +34,7 @@ def handle_join(data):
 def handle_leave(data):
     room_id = data['room_id']
     user_name = data['user_name']
+    print('leave', room_id, user_name)
     
     if not user_name or not room_id:
         emit('error', {'message': 'Missing user_name or room_id',
@@ -90,5 +92,5 @@ def handle_watchdog(data):
         emit('error', {'message': 'Missing user_name',
                        'code': 3})
         return
-    
+    print('watchdog', user_name)
     update_user_last_seen(user_name)
