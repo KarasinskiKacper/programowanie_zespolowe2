@@ -144,15 +144,15 @@ export async function createRoomRequest(
   return response.json();
 }
 
-export async function joinRoomRequest(accessToken: string, room_name: string, access_key: string) {
-  const user_name = jwt.decode(accessToken).sub;
-  const response = await fetch(`${BASE_URL}/room/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ user_name, room_name, access_key }),
-  });
+// export async function joinRoomRequest(accessToken: string, room_name: string, access_key: string) {
+//   const user_name = jwt.decode(accessToken).sub;
+//   const response = await fetch(`${BASE_URL}/room/create`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ user_name, room_name, access_key }),
+//   });
 
-  return response.json();
-}
+//   return response.json();
+// }

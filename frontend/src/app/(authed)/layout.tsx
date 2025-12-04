@@ -68,7 +68,7 @@ export default function RootLayout({
           id: room.room_id,
           isPrivate: true,
           room_owner: room.room_owner,
-        }); // TODO change id to name
+        });
       }
       resultUserRooms.push(room);
     });

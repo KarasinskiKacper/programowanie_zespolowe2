@@ -17,7 +17,7 @@ import {
   getChatMembers,
   joinPublicRoom,
   createRoomRequest,
-  joinRoomRequest,
+  joinPrivateRoom,
   getPublicRooms,
   getUserRooms,
 } from "../auth/lib";
@@ -60,6 +60,11 @@ export default function Page() {
   const [joinRoomPassword, setJoinRoomPassword] = useState("");
   const [joinRoomPasswordError, setJoinRoomPasswordError] = useState("");
 
+  const [joinPrivateRoomName, setJoinPrivateRoomName] = useState("");
+  const [joinPrivateRoomNameError, setJoinPrivateRoomNameError] = useState("");
+  const [joinPrivateRoomPassword, setJoinPrivateRoomPassword] = useState("");
+  const [joinPrivateRoomPasswordError, setJoinPrivateRoomPasswordError] = useState("");
+
   const [createRoomName, setCreateRoomName] = useState("");
   const [createRoomPassword, setCreateRoomPassword] = useState("");
   const [createRoomConfirmPassword, setCreateRoomConfirmPassword] = useState("");
@@ -70,13 +75,15 @@ export default function Page() {
   const [createRoomConfirmPasswordError, setCreateRoomConfirmPasswordError] = useState("");
 
   const sendJoinRoomRequest = async () => {
+    console.log("sendJoinRoomRequest1");
+
     let isProperData = true;
-    if (joinRoomName === "") {
-      setJoinRoomNameError("Podaj nazwę pokoju");
-      isProperData = false;
-    } else {
-      setJoinRoomNameError("");
-    }
+    // if (joinRoomName === "") {
+    //   setJoinRoomNameError("Podaj nazwę pokoju");
+    //   isProperData = false;
+    // } else {
+    //   setJoinRoomNameError("");
+    // }
     if (joinRoomPassword === "") {
       setJoinRoomPasswordError("Podaj klucz");
       isProperData = false;
@@ -91,14 +98,62 @@ export default function Page() {
     if (!isProperData) {
       return isProperData;
     }
+    console.log("sendJoinRoomRequest2");
 
-    const response = await joinRoomRequest(accessToken, joinRoomName, joinRoomPassword);
+    console.log(accessToken, joinRoomPassword);
 
-    if (response?.message === "Room created successfully") return true;
-    else {
+    const response = await joinPrivateRoom(accessToken, joinRoomPassword);
+    console.log(response);
+    console.log(response.status);
+
+    if (response?.status === 200) {
+      return true;
+    } else {
       setJoinRoomPasswordError("Błędny klucz");
       return false;
     }
+  };
+
+  const fetchRoomListData = async () => {
+    const cookie = await getCookie("access_token");
+    if (!cookie) {
+      router.push("/logowanie");
+    } else {
+      setAccessToken(cookie);
+    }
+
+    const fetchedRooms = await getPublicRooms();
+    // const fetchedUserRooms = [];
+    const fetchedUserRooms = await getUserRooms(cookie);
+
+    let resultRooms: Object[] = [];
+
+    fetchedRooms.forEach((room) => {
+      resultRooms.push({
+        name: room.room_name,
+        id: room.room_id,
+        isPrivate: false,
+        room_owner: room.room_owner,
+      });
+    });
+
+    let resultUserRooms: Object[] = [];
+    fetchedUserRooms.forEach((room) => {
+      if (!resultRooms.find((r) => r["id"] === room.room_id)) {
+        resultRooms.push({
+          name: room.room_name,
+          id: room.room_id,
+          isPrivate: true,
+          room_owner: room.room_owner,
+        }); // TODO change id to name
+      }
+      resultUserRooms.push(room);
+    });
+    console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultRooms}`);
+    console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultUserRooms}`);
+    setRooms(resultRooms);
+
+    setUserRooms(resultUserRooms);
   };
 
   const sendCreateRoomRequest = async () => {
@@ -239,15 +294,14 @@ export default function Page() {
       socket.emit("watchdog", {
         user_name: user_name,
       });
+      console.log("watchdog");
     }
   }
 
   const joinRoom = async (room_id: number) => {
     const user_name = jwt.decode(accessToken).sub;
     if (chosenRoom !== room_id) {
-      console.log("joinPublicRoom");
-
-      joinPublicRoom(room_id, accessToken); // TODO fix 400 on joining room
+      await joinPublicRoom(room_id, accessToken);
     }
 
     if (chosenRoom !== null && chosenRoom !== room_id) {
@@ -296,13 +350,14 @@ export default function Page() {
     ]);
   };
 
-  const onUserJoin = (data) => {
-    console.log(`${data.user_name} dołączył do pokoju ${data.room_id}`);
-  };
-  const onUserLeft = (data) => {
-    console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
-  };
-  const onUserOnline = (data) => {
+  // const onUserJoin = (data) => {
+  //   console.log(`${data.user_name} dołączył do pokoju ${data.room_id}`);
+  // };
+  // const onUserLeft = (data) => {
+  //   console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
+  // };
+  const onUserActivityChange = (data) => {
+    console.log(`[Dashboard/onUserOnline/chosenRoom]`, chosenRoom);
     console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
   };
   const onUserListUpdate = () => {
@@ -316,14 +371,13 @@ export default function Page() {
   const onUserListUpdated = () => {
     console.log("onUserListUpdated");
     console.log(rooms);
-
     fetchRoomData();
   };
 
   const onRoomListUpdated = () => {
     console.log("onRoomListUpdated");
     // setTimeout(() => {
-    // fetchRoomListData();
+    fetchRoomListData();
     // }, 100);
   };
 
@@ -353,13 +407,14 @@ export default function Page() {
     socket.on("disconnect", onDisconnect);
 
     // response on join
-    socket.on("user_joined", onUserJoin);
+    // socket.on("user_joined", onUserJoin);
 
-    // response on leave
-    socket.on("user_left", onUserLeft);
+    // // response on leave
+    // socket.on("user_left", onUserLeft);
 
     // response on watchdog
-    socket.on("user_online", onUserOnline);
+    socket.on("user_online", onUserActivityChange);
+    socket.on("user_offline", onUserActivityChange);
 
     // response on API user_room table update
 
@@ -378,15 +433,16 @@ export default function Page() {
       socket.off("disconnect", onDisconnect);
       socket.off("new_message", onNewMessage);
 
-      socket.off("user_join", onUserJoin);
-      socket.off("user_left", onUserLeft);
-      socket.off("user_online", onUserOnline);
+      // socket.off("user_join", onUserJoin);
+      // socket.off("user_left", onUserLeft);
+      socket.off("user_online", onUserActivityChange);
+      socket.off("user_offline", onUserActivityChange);
 
       socket.off("error", onError);
       socket.off("user_list_updated", onUserListUpdated);
       socket.off("room_list_updated", onRoomListUpdated);
     };
-  }, []);
+  }, [chosenRoom]);
 
   return (
     <div className="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden">
@@ -436,6 +492,15 @@ export default function Page() {
           setJoinRoomNameError,
           setJoinRoomPasswordError,
           sendJoinRoomRequest,
+
+          joinPrivateRoomName,
+          setJoinPrivateRoomName,
+          joinPrivateRoomNameError,
+          setJoinPrivateRoomNameError,
+          joinPrivateRoomPassword,
+          setJoinPrivateRoomPassword,
+          joinPrivateRoomPasswordError,
+          setJoinPrivateRoomPasswordError,
         }}
       />
       <RightAside aside={rightAside} payload={{ members }} />
@@ -596,13 +661,13 @@ const Workspace = ({
     return (
       <div className="flex-1 self-stretch  inline-flex flex-col justify-center items-center gap-8 overflow-hidden">
         <div className="p-16 bg-white  outline-4  outline-[#6D66D2] flex flex-col justify-start items-start gap-8">
-          <TextInput
+          {/* <TextInput
             label="Nazwa pokoju"
             placeholder="Wpisz nazwę pokoju"
             value={payload.joinRoomName}
             setValue={payload.setJoinRoomName}
             error={payload.joinRoomNameError}
-          />
+          /> */}
           <TextInput
             label="Klucz"
             placeholder="Wpisz Klucz"
@@ -613,7 +678,7 @@ const Workspace = ({
           <Button
             label="Wejdź"
             onClick={async () => {
-              if (await payload.sendJoinRoomRequest) {
+              if (await payload.sendJoinRoomRequest()) {
                 location.reload();
               }
             }}
