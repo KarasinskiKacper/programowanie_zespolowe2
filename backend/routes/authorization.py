@@ -6,6 +6,19 @@ bp = Blueprint("auth", __name__, url_prefix="/api")
 
 @bp.route("/register", methods=['POST'])
 def register():
+    """
+    Register a new user
+
+    Parameters:
+        user_name (str): The username of the new user
+        password (str): The password of the new user
+
+    Returns:
+        dict: A dictionary containing the access token of the newly registered user
+    Errors:
+        400: Missing user_name or password
+        409: User with given user_name already exists
+    """
     data = request.json
     username = data.get("user_name")
     password = data.get("password")
@@ -24,6 +37,19 @@ def register():
 
 @bp.route("/login", methods=['POST'])
 def login():
+    """
+    Login an existing user
+
+    Parameters:
+        user_name (str): The username of the existing user
+        password (str): The password of the existing user
+
+    Returns:
+        dict: A dictionary containing the access token of the logged in user
+    Errors:
+        400: Missing user_name or password
+        401: Invalid user credentials
+    """
     data = request.json
     username = data.get("user_name")
     password = data.get("password")

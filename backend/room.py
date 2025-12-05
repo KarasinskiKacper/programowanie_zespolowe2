@@ -5,6 +5,27 @@ from app_state import socketio
 
 @socketio.on('join')
 def handle_join(data):
+    """
+    Handle a user joining a room.
+
+    Parameters:
+        data (dict): A dictionary containing the user_name and room_id.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Emits:
+        error (dict): A dictionary containing the error message and code.
+        user_joined (dict): A dictionary containing the user_name and room_id.
+
+    Notes:
+        If the user_name or room_id is missing, an error is emitted.
+        If the room is private and the user is not in the room, an error is emitted.
+        If the user joins the room successfully, user_joined is emitted to the room.
+    """
     room_id = data['room_id']
     user_name = data['user_name']
     
@@ -31,6 +52,26 @@ def handle_join(data):
 
 @socketio.on('leave')
 def handle_leave(data):
+    """
+    Handle a user leaving a room.
+
+    Parameters:
+        data (dict): A dictionary containing the user_name and room_id.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Emits:
+        error (dict): A dictionary containing the error message and code.
+        user_left (dict): A dictionary containing the user_name and room_id.
+
+    Notes:
+        If the user_name or room_id is missing, an error is emitted.
+        If the user leaves the room successfully, user_left is emitted to the room.
+    """
     room_id = data['room_id']
     user_name = data['user_name']
     
@@ -48,6 +89,28 @@ def handle_leave(data):
 
 @socketio.on('message')
 def handle_message(data):
+    """
+    Handle a message sent by a user to a room.
+
+    Parameters:
+        data (dict): A dictionary containing the room_id, user_name, and message.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Emits:
+        error (dict): A dictionary containing the error message and code.
+        new_message (dict): A dictionary containing the chat_id, user_name, message, and create_date.
+
+    Notes:
+        If the user_name or room_id is missing, an error is emitted.
+        If the message is missing, an error is emitted.
+        If the message is too long, an error is emitted.
+        If the message is sent successfully, new_message is emitted to the room.
+    """
     room_id = data['room_id']
     user_name = data['user_name']
     message = data['message']
@@ -84,6 +147,25 @@ def handle_message(data):
 
 @socketio.on('watchdog')
 def handle_watchdog(data):
+    """
+    Handle a watchdog event sent by a user.
+
+    Parameters:
+        data (dict): A dictionary containing the user_name.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Emits:
+        error (dict): A dictionary containing the error message and code.
+
+    Notes:
+        If the user_name is missing, an error is emitted.
+        If the watchdog event is sent successfully, update_user_last_seen is called with the user_name.
+    """
     user_name = data['user_name']
 
     if not user_name:

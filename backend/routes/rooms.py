@@ -7,6 +7,12 @@ bp = Blueprint('rooms', __name__, url_prefix='/api')
 
 @bp.route('/rooms', methods=['GET'])
 def get_rooms():
+    """
+    Get a list of all public rooms.
+
+    Returns:
+        list: A list of public rooms, each containing the room_id, room_name, room_owner, create_date, is_private, and access_key.
+    """
     query = Rooms.query.filter_by(is_private=False)
     
     rooms = query.all()
@@ -15,6 +21,19 @@ def get_rooms():
 
 @bp.route('/room', methods=['GET'])
 def get_room():
+    """
+    Get a room by its id.
+
+    Parameters:
+        room_id (str): The id of the room to get.
+
+    Returns:
+        dict: A dictionary containing the room_id, room_name, room_owner, create_date, is_private, and access_key of the room.
+
+    Raises:
+        400: If the room_id parameter is missing.
+        404: If the room is not found.
+    """
     query = Rooms.query
 
     if request.args.get("room_id"):
@@ -33,6 +52,20 @@ def get_room():
 @bp.route('/room/join_public', methods=['POST'])
 @jwt_required()
 def join_public_room():
+    """
+    Join a public room by its id.
+
+    Parameters:
+        room_id (str): The id of the public room to join.
+
+    Returns:
+        dict: A dictionary containing the message of the join action.
+
+    Raises:
+        400: If the room_id parameter is missing.
+        404: If the room is not found.
+    """
+    
     user_name = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
@@ -63,6 +96,19 @@ def join_public_room():
 @bp.route('/room/join_private', methods=['POST'])
 @jwt_required()
 def join_private_room():
+    """
+    Join a private room by its access key.
+
+    Parameters:
+        access_key (str): The access key of the private room to join.
+
+    Returns:
+        dict: A dictionary containing the message of the join action.
+
+    Raises:
+        400: If the access_key parameter is missing.
+        404: If the room is not found or the user is not found.
+    """
     user_name = get_jwt_identity()
     data = request.json
     access_key = data.get("access_key")
@@ -96,6 +142,19 @@ def join_private_room():
 @bp.route('/room/leave', methods=['POST'])
 @jwt_required()
 def leave_room():
+    """
+    Leave a room by its id.
+
+    Parameters:
+        room_id (int): The id of the room to leave.
+
+    Returns:
+        dict: A dictionary containing the message of the leave action.
+
+    Raises:
+        400: If the room_id or user_name parameter is missing.
+        404: If the room is not found or the user is not in the room.
+    """
     user_name = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
@@ -128,6 +187,22 @@ def leave_room():
 @bp.route('/room/create', methods=['POST'])
 @jwt_required()
 def create_room():
+    """
+    Create a room.
+
+    Parameters:
+        room_name (str): The name of the room to create.
+        is_private (bool): Whether the room is private or not.
+        access_key (str): The access key for the room.
+
+    Returns:
+        dict: A dictionary containing the message of the create action.
+
+    Raises:
+        400: If the room_name, room_owner, or access_key parameter is missing.
+        400: If a room with the given access key already exists.
+    """
+    
     room_owner = get_jwt_identity()
     data = request.json
     room_name = data.get("room_name")
@@ -159,6 +234,19 @@ def create_room():
 @bp.route('/room/delete', methods=['POST'])
 @jwt_required()
 def delete_room():
+    """
+    Delete a room by its id.
+
+    Parameters:
+        room_id (int): The id of the room to delete.
+
+    Returns:
+        dict: A dictionary containing the message of the delete action.
+
+    Raises:
+        400: If the room_id parameter is missing.
+        404: If the room is not found or the user is not the room owner.
+    """
     room_owner = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
@@ -183,6 +271,23 @@ def delete_room():
 @bp.route('/room/edit', methods=['POST'])
 @jwt_required()
 def edit_room():
+    """
+    Edit a room by its id.
+
+    Parameters:
+        room_id (int): The id of the room to edit.
+        new_access_key (str): The new access key for the room.
+        is_private (bool): Whether the room is private or not.
+        new_name (str): The new name for the room.
+
+    Returns:
+        dict: A dictionary containing the message of the edit action.
+
+    Raises:
+        400: If the room_id parameter is missing.
+        404: If the room is not found.
+        403: If the user is not the room owner.
+    """
     data = request.json
     room_owner = get_jwt_identity()
     room_id = data.get("room_id")

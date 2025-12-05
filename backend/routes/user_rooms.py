@@ -7,6 +7,12 @@ bp = Blueprint('user_rooms', __name__, url_prefix='/api')
 @bp.route('/user_rooms', methods=['GET'])
 @jwt_required()
 def get_user_rooms():
+    """
+    Get a list of user rooms for the current user.
+
+    Returns:
+        list: A list of user rooms, each containing the user_name, room_id, room_name, room_owner, and is_private.
+    """
     user_name = get_jwt_identity()
     query = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Users_room.user_name == user_name)
     user_rooms = query.all()
@@ -26,6 +32,15 @@ def get_user_rooms():
 
 @bp.route('/user_list', methods=['GET'])
 def get_user_list():
+    """
+    Get a list of users in a room.
+
+    Parameters:
+        room_id (str): The id of the room to get the user list for.
+
+    Returns:
+        list: A list of users in the room, each containing the user_name, room_id.
+    """
     query = Users_room.query
     
     if request.args.get("room_id"):
@@ -40,6 +55,16 @@ def get_user_list():
 @bp.route('/user_kick', methods=['POST'])
 @jwt_required()
 def kick_user():
+    """
+    Kick a user from a room.
+
+    Parameters:
+        room_id (str): The id of the room to kick the user from.
+        user_to_kick (str): The name of the user to kick.
+
+    Returns:
+        dict: A dictionary containing the message of the kick action.
+    """
     user_name = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
@@ -48,8 +73,7 @@ def kick_user():
     if not user_name or not room_id:
         return jsonify({"error": "Missing user_name or room_id parameter"}), 400
     
-    user_room_owner = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter_by(Rooms.room_owner == user_name)
-    
+    user_room_owner = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Rooms.room_owner == User_room.user_name)
     if user_room_owner is None:
         return jsonify({"error": "User not owner of room "}), 404
     

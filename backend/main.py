@@ -11,6 +11,12 @@ from app_state import update_user_room_maps
 from user_activity import start_activity_tracking
 
 def initialize_room_users():
+    """
+    Initialize the room_users map by iterating over all rooms and their users.
+
+    The room_users map is a dictionary where the key is the room_id and the value is a set of user_names.
+    This map is used to quickly get the list of users in a room.
+    """
     rooms = Rooms.query.all()
     for rooms in rooms:
         users = Users_room.query.filter_by(room_id=rooms.room_id).all()
@@ -18,6 +24,17 @@ def initialize_room_users():
             update_user_room_maps(rooms.room_id, user.user_name)
 
 def create_app():
+    """
+    Create a Flask app with the necessary configurations and routes.
+
+    This function initializes a Flask app with CORS enabled, JWTManager configured,
+    and SQLAlchemy configured with the database URI from the environment variables.
+
+    It also registers the necessary blueprints for the routes.
+
+    Returns:
+        app (Flask): The created Flask app.
+    """
     load_dotenv()
     app = Flask(__name__)
     CORS(app) # Enable CORS for next.js
