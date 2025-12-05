@@ -1,0 +1,27 @@
+\doxysubsection{app\+\_\+state.\+py File Reference}
+\hypertarget{app__state_8py}{}\label{app__state_8py}\index{app\_state.py@{app\_state.py}}
+\doxysubsubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceapp__state}{app\+\_\+state}}
+\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceapp__state_ab7462f9ac388518078f97f00c81de308}{app\+\_\+state.\+update\+\_\+user\+\_\+room\+\_\+maps}} (int room\+\_\+id, str user\+\_\+name, bool remove=False)
+\begin{DoxyCompactList}\small\item\em Add or remove a user from \doxylink{namespaceuser__rooms}{user\+\_\+rooms} and room\+\_\+users maps. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceapp__state_a3ec1ce4ed4daa3d2eb330a782c08e63f}{app\+\_\+state.\+remove\+\_\+room}} (int room\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Remove a room and clean up all associated user references. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceapp__state_a01555248a8606abcd196bcb55532b107}{app\+\_\+state.\+socketio}} = Socket\+IO(cors\+\_\+allowed\+\_\+origins="{}\texorpdfstring{$\ast$}{*}"{})
+\item 
+\mbox{\hyperlink{namespaceapp__state_a550b1926c3ff256e15f9eba03bd815a3}{app\+\_\+state.\+online\+\_\+users}} = set()
+\item 
+dict \mbox{\hyperlink{namespaceapp__state_a3edd4102dc91f9554cc5eba03255a52e}{app\+\_\+state.\+user\+\_\+last\+\_\+seen}} = \{\}
+\item 
+dict \mbox{\hyperlink{namespaceapp__state_a09bd0b48780e9f97d320ece22fbacd49}{app\+\_\+state.\+room\+\_\+users}} = \{\}
+\item 
+dict \mbox{\hyperlink{namespaceapp__state_a9f59f6bc46f65426b34d65393fcfd06a}{app\+\_\+state.\+user\+\_\+rooms}} = \{\}
+\end{DoxyCompactItemize}

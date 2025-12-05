@@ -1,0 +1,87 @@
+\doxysubsection{user\+\_\+activity Namespace Reference}
+\hypertarget{namespaceuser__activity}{}\label{namespaceuser__activity}\index{user\_activity@{user\_activity}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+None \mbox{\hyperlink{namespaceuser__activity_a7fdc9d9137cdcab059b6cb973da3aa3c}{set\+\_\+user\+\_\+online}} (str user\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Set a user as online. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{namespaceuser__activity_a1a8946fe9eb8130196b423f0281ac24d}{update\+\_\+user\+\_\+last\+\_\+seen}} (str user\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Update the last seen timestamp of a user and set them as online. \end{DoxyCompactList}\item 
+set \mbox{\hyperlink{namespaceuser__activity_aa16f6fd9adec3023808be81c603b15f7}{get\+\_\+online\+\_\+users}} (str user\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Get a set of online users that are in the same rooms as the given user. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceuser__activity_ac95ffae66a76a3183c73a26815394e4d}{start\+\_\+activity\+\_\+tracking}} ()
+\begin{DoxyCompactList}\small\item\em Start a background task to track user activity. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespaceuser__activity_aa16f6fd9adec3023808be81c603b15f7}\index{user\_activity@{user\_activity}!get\_online\_users@{get\_online\_users}}
+\index{get\_online\_users@{get\_online\_users}!user\_activity@{user\_activity}}
+\doxyparagraph{\texorpdfstring{get\_online\_users()}{get\_online\_users()}}
+{\footnotesize\ttfamily \label{namespaceuser__activity_aa16f6fd9adec3023808be81c603b15f7} 
+ set user\+\_\+activity.\+get\+\_\+online\+\_\+users (\begin{DoxyParamCaption}\item[{str}]{user\+\_\+name}{}\end{DoxyParamCaption})}
+
+
+
+Get a set of online users that are in the same rooms as the given user. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+name} & The name of the user to get online users for.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A set of online users that are in the same rooms as the given user. 
+\end{DoxyReturn}
+\Hypertarget{namespaceuser__activity_a7fdc9d9137cdcab059b6cb973da3aa3c}\index{user\_activity@{user\_activity}!set\_user\_online@{set\_user\_online}}
+\index{set\_user\_online@{set\_user\_online}!user\_activity@{user\_activity}}
+\doxyparagraph{\texorpdfstring{set\_user\_online()}{set\_user\_online()}}
+{\footnotesize\ttfamily \label{namespaceuser__activity_a7fdc9d9137cdcab059b6cb973da3aa3c} 
+ None user\+\_\+activity.\+set\+\_\+user\+\_\+online (\begin{DoxyParamCaption}\item[{str}]{user\+\_\+name}{}\end{DoxyParamCaption})}
+
+
+
+Set a user as online. 
+
+If the user is already online, do nothing. Otherwise, add the user to the set of online users and emit a "{}user\+\_\+online"{} event to all rooms that the user is a member of.
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+name} & The name of the user to set as online.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\Hypertarget{namespaceuser__activity_ac95ffae66a76a3183c73a26815394e4d}\index{user\_activity@{user\_activity}!start\_activity\_tracking@{start\_activity\_tracking}}
+\index{start\_activity\_tracking@{start\_activity\_tracking}!user\_activity@{user\_activity}}
+\doxyparagraph{\texorpdfstring{start\_activity\_tracking()}{start\_activity\_tracking()}}
+{\footnotesize\ttfamily \label{namespaceuser__activity_ac95ffae66a76a3183c73a26815394e4d} 
+user\+\_\+activity.\+start\+\_\+activity\+\_\+tracking (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Start a background task to track user activity. 
+
+This task will check the last seen timestamp of each user every second. If the difference between the current timestamp and the last seen timestamp is greater than the timeout threshold, it will set the user as offline and emit a "{}user\+\_\+offline"{} event to all rooms that the user is a member of.
+
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\Hypertarget{namespaceuser__activity_a1a8946fe9eb8130196b423f0281ac24d}\index{user\_activity@{user\_activity}!update\_user\_last\_seen@{update\_user\_last\_seen}}
+\index{update\_user\_last\_seen@{update\_user\_last\_seen}!user\_activity@{user\_activity}}
+\doxyparagraph{\texorpdfstring{update\_user\_last\_seen()}{update\_user\_last\_seen()}}
+{\footnotesize\ttfamily \label{namespaceuser__activity_a1a8946fe9eb8130196b423f0281ac24d} 
+ None user\+\_\+activity.\+update\+\_\+user\+\_\+last\+\_\+seen (\begin{DoxyParamCaption}\item[{str}]{user\+\_\+name}{}\end{DoxyParamCaption})}
+
+
+
+Update the last seen timestamp of a user and set them as online. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+name} & The name of the user to update.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}

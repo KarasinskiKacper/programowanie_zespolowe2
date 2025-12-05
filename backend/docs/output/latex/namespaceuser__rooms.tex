@@ -1,0 +1,79 @@
+\doxysubsection{user\+\_\+rooms Namespace Reference}
+\hypertarget{namespaceuser__rooms}{}\label{namespaceuser__rooms}\index{user\_rooms@{user\_rooms}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceuser__rooms_a1762948a7041f60ca02df0406a96cda9}{get\+\_\+user\+\_\+rooms}} ()
+\begin{DoxyCompactList}\small\item\em Get a list of user rooms for the current user. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceuser__rooms_a9b95784a982dda462c2131f7d06e36a1}{get\+\_\+user\+\_\+list}} ()
+\begin{DoxyCompactList}\small\item\em Get a list of users in a room. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceuser__rooms_a1d5bb87999fda91721093d67c3c0c072}{kick\+\_\+user}} ()
+\begin{DoxyCompactList}\small\item\em Kick a user from a room. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceuser__rooms_ad6f38161f3f7c0c7cc6b412e69b27e6c}{bp}} = Blueprint(\textquotesingle{}user\+\_\+rooms\textquotesingle{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix=\textquotesingle{}/api\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespaceuser__rooms_a9b95784a982dda462c2131f7d06e36a1}\index{user\_rooms@{user\_rooms}!get\_user\_list@{get\_user\_list}}
+\index{get\_user\_list@{get\_user\_list}!user\_rooms@{user\_rooms}}
+\doxyparagraph{\texorpdfstring{get\_user\_list()}{get\_user\_list()}}
+{\footnotesize\ttfamily \label{namespaceuser__rooms_a9b95784a982dda462c2131f7d06e36a1} 
+user\+\_\+rooms.\+get\+\_\+user\+\_\+list (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Get a list of users in a room. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em room\+\_\+id} & The id of the room to get the user list for.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A list of users in the room, each containing the user\+\_\+name, room\+\_\+id. 
+\end{DoxyReturn}
+\Hypertarget{namespaceuser__rooms_a1762948a7041f60ca02df0406a96cda9}\index{user\_rooms@{user\_rooms}!get\_user\_rooms@{get\_user\_rooms}}
+\index{get\_user\_rooms@{get\_user\_rooms}!user\_rooms@{user\_rooms}}
+\doxyparagraph{\texorpdfstring{get\_user\_rooms()}{get\_user\_rooms()}}
+{\footnotesize\ttfamily \label{namespaceuser__rooms_a1762948a7041f60ca02df0406a96cda9} 
+user\+\_\+rooms.\+get\+\_\+user\+\_\+rooms (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Get a list of user rooms for the current user. 
+
+\begin{DoxyReturn}{Returns}
+A list of user rooms, each containing the user\+\_\+name, room\+\_\+id, room\+\_\+name, room\+\_\+owner, and is\+\_\+private. 
+\end{DoxyReturn}
+\Hypertarget{namespaceuser__rooms_a1d5bb87999fda91721093d67c3c0c072}\index{user\_rooms@{user\_rooms}!kick\_user@{kick\_user}}
+\index{kick\_user@{kick\_user}!user\_rooms@{user\_rooms}}
+\doxyparagraph{\texorpdfstring{kick\_user()}{kick\_user()}}
+{\footnotesize\ttfamily \label{namespaceuser__rooms_a1d5bb87999fda91721093d67c3c0c072} 
+user\+\_\+rooms.\+kick\+\_\+user (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Kick a user from a room. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em room\+\_\+id} & The id of the room to kick the user from. \\
+\hline
+{\em user\+\_\+to\+\_\+kick} & The name of the user to kick.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A dictionary containing the message of the kick action. 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Variable Documentation}
+\Hypertarget{namespaceuser__rooms_ad6f38161f3f7c0c7cc6b412e69b27e6c}\index{user\_rooms@{user\_rooms}!bp@{bp}}
+\index{bp@{bp}!user\_rooms@{user\_rooms}}
+\doxyparagraph{\texorpdfstring{bp}{bp}}
+{\footnotesize\ttfamily \label{namespaceuser__rooms_ad6f38161f3f7c0c7cc6b412e69b27e6c} 
+user\+\_\+rooms.\+bp = Blueprint(\textquotesingle{}user\+\_\+rooms\textquotesingle{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix=\textquotesingle{}/api\textquotesingle{})}
+

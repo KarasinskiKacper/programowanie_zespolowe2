@@ -1,0 +1,98 @@
+\doxysubsection{app\+\_\+state Namespace Reference}
+\hypertarget{namespaceapp__state}{}\label{namespaceapp__state}\index{app\_state@{app\_state}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceapp__state_ab7462f9ac388518078f97f00c81de308}{update\+\_\+user\+\_\+room\+\_\+maps}} (int room\+\_\+id, str user\+\_\+name, bool remove=False)
+\begin{DoxyCompactList}\small\item\em Add or remove a user from \doxylink{namespaceuser__rooms}{user\+\_\+rooms} and room\+\_\+users maps. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceapp__state_a3ec1ce4ed4daa3d2eb330a782c08e63f}{remove\+\_\+room}} (int room\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Remove a room and clean up all associated user references. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceapp__state_a01555248a8606abcd196bcb55532b107}{socketio}} = Socket\+IO(cors\+\_\+allowed\+\_\+origins="{}\texorpdfstring{$\ast$}{*}"{})
+\item 
+\mbox{\hyperlink{namespaceapp__state_a550b1926c3ff256e15f9eba03bd815a3}{online\+\_\+users}} = set()
+\item 
+dict \mbox{\hyperlink{namespaceapp__state_a3edd4102dc91f9554cc5eba03255a52e}{user\+\_\+last\+\_\+seen}} = \{\}
+\item 
+dict \mbox{\hyperlink{namespaceapp__state_a09bd0b48780e9f97d320ece22fbacd49}{room\+\_\+users}} = \{\}
+\item 
+dict \mbox{\hyperlink{namespaceapp__state_a9f59f6bc46f65426b34d65393fcfd06a}{user\+\_\+rooms}} = \{\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespaceapp__state_a3ec1ce4ed4daa3d2eb330a782c08e63f}\index{app\_state@{app\_state}!remove\_room@{remove\_room}}
+\index{remove\_room@{remove\_room}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{remove\_room()}{remove\_room()}}
+{\footnotesize\ttfamily \label{namespaceapp__state_a3ec1ce4ed4daa3d2eb330a782c08e63f} 
+app\+\_\+state.\+remove\+\_\+room (\begin{DoxyParamCaption}\item[{int}]{room\+\_\+id}{}\end{DoxyParamCaption})}
+
+
+
+Remove a room and clean up all associated user references. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em room\+\_\+id} & The ID of the room to remove.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\Hypertarget{namespaceapp__state_ab7462f9ac388518078f97f00c81de308}\index{app\_state@{app\_state}!update\_user\_room\_maps@{update\_user\_room\_maps}}
+\index{update\_user\_room\_maps@{update\_user\_room\_maps}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{update\_user\_room\_maps()}{update\_user\_room\_maps()}}
+{\footnotesize\ttfamily \label{namespaceapp__state_ab7462f9ac388518078f97f00c81de308} 
+app\+\_\+state.\+update\+\_\+user\+\_\+room\+\_\+maps (\begin{DoxyParamCaption}\item[{int}]{room\+\_\+id}{, }\item[{str }]{user\+\_\+name}{, }\item[{bool }]{remove}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+
+
+Add or remove a user from \doxylink{namespaceuser__rooms}{user\+\_\+rooms} and room\+\_\+users maps. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em room\+\_\+id} & The ID of the room. \\
+\hline
+{\em user\+\_\+name} & The name of the user. \\
+\hline
+{\em remove} & If True, remove the user from the room.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Variable Documentation}
+\Hypertarget{namespaceapp__state_a550b1926c3ff256e15f9eba03bd815a3}\index{app\_state@{app\_state}!online\_users@{online\_users}}
+\index{online\_users@{online\_users}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{online\_users}{online\_users}}
+{\footnotesize\ttfamily \label{namespaceapp__state_a550b1926c3ff256e15f9eba03bd815a3} 
+app\+\_\+state.\+online\+\_\+users = set()}
+
+\Hypertarget{namespaceapp__state_a09bd0b48780e9f97d320ece22fbacd49}\index{app\_state@{app\_state}!room\_users@{room\_users}}
+\index{room\_users@{room\_users}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{room\_users}{room\_users}}
+{\footnotesize\ttfamily \label{namespaceapp__state_a09bd0b48780e9f97d320ece22fbacd49} 
+dict app\+\_\+state.\+room\+\_\+users = \{\}}
+
+\Hypertarget{namespaceapp__state_a01555248a8606abcd196bcb55532b107}\index{app\_state@{app\_state}!socketio@{socketio}}
+\index{socketio@{socketio}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{socketio}{socketio}}
+{\footnotesize\ttfamily \label{namespaceapp__state_a01555248a8606abcd196bcb55532b107} 
+app\+\_\+state.\+socketio = Socket\+IO(cors\+\_\+allowed\+\_\+origins="{}\texorpdfstring{$\ast$}{*}"{})}
+
+\Hypertarget{namespaceapp__state_a3edd4102dc91f9554cc5eba03255a52e}\index{app\_state@{app\_state}!user\_last\_seen@{user\_last\_seen}}
+\index{user\_last\_seen@{user\_last\_seen}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{user\_last\_seen}{user\_last\_seen}}
+{\footnotesize\ttfamily \label{namespaceapp__state_a3edd4102dc91f9554cc5eba03255a52e} 
+dict app\+\_\+state.\+user\+\_\+last\+\_\+seen = \{\}}
+
+\Hypertarget{namespaceapp__state_a9f59f6bc46f65426b34d65393fcfd06a}\index{app\_state@{app\_state}!user\_rooms@{user\_rooms}}
+\index{user\_rooms@{user\_rooms}!app\_state@{app\_state}}
+\doxyparagraph{\texorpdfstring{user\_rooms}{user\_rooms}}
+{\footnotesize\ttfamily \label{namespaceapp__state_a9f59f6bc46f65426b34d65393fcfd06a} 
+dict app\+\_\+state.\+user\+\_\+rooms = \{\}}
+

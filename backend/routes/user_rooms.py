@@ -7,11 +7,10 @@ bp = Blueprint('user_rooms', __name__, url_prefix='/api')
 @bp.route('/user_rooms', methods=['GET'])
 @jwt_required()
 def get_user_rooms():
-    """
+    """!
     Get a list of user rooms for the current user.
 
-    Returns:
-        list: A list of user rooms, each containing the user_name, room_id, room_name, room_owner, and is_private.
+    @return A list of user rooms, each containing the user_name, room_id, room_name, room_owner, and is_private.
     """
     user_name = get_jwt_identity()
     query = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Users_room.user_name == user_name)
@@ -32,14 +31,12 @@ def get_user_rooms():
 
 @bp.route('/user_list', methods=['GET'])
 def get_user_list():
-    """
+    """!
     Get a list of users in a room.
 
-    Parameters:
-        room_id (str): The id of the room to get the user list for.
+    @param room_id The id of the room to get the user list for.
 
-    Returns:
-        list: A list of users in the room, each containing the user_name, room_id.
+    @return A list of users in the room, each containing the user_name, room_id.
     """
     query = Users_room.query
     
@@ -55,15 +52,13 @@ def get_user_list():
 @bp.route('/user_kick', methods=['POST'])
 @jwt_required()
 def kick_user():
-    """
+    """!
     Kick a user from a room.
 
-    Parameters:
-        room_id (str): The id of the room to kick the user from.
-        user_to_kick (str): The name of the user to kick.
+    @param room_id The id of the room to kick the user from.
+    @param user_to_kick The name of the user to kick.
 
-    Returns:
-        dict: A dictionary containing the message of the kick action.
+    @return A dictionary containing the message of the kick action.
     """
     user_name = get_jwt_identity()
     data = request.json

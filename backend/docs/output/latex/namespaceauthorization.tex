@@ -1,0 +1,80 @@
+\doxysubsection{authorization Namespace Reference}
+\hypertarget{namespaceauthorization}{}\label{namespaceauthorization}\index{authorization@{authorization}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceauthorization_aae54b215ccf64770ef2dfa8e2416aafd}{register}} ()
+\begin{DoxyCompactList}\small\item\em Register a new user. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceauthorization_ab9a05ce2970df3156dc2ee212da6874a}{login}} ()
+\begin{DoxyCompactList}\small\item\em Login an existing user. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceauthorization_afe573febce812478e6e3ec1d00ddad45}{bp}} = Blueprint("{}auth"{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix="{}/api"{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespaceauthorization_ab9a05ce2970df3156dc2ee212da6874a}\index{authorization@{authorization}!login@{login}}
+\index{login@{login}!authorization@{authorization}}
+\doxyparagraph{\texorpdfstring{login()}{login()}}
+{\footnotesize\ttfamily \label{namespaceauthorization_ab9a05ce2970df3156dc2ee212da6874a} 
+authorization.\+login (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Login an existing user. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+name} & The username of the existing user. \\
+\hline
+{\em password} & The password of the existing user.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A dictionary containing the access token of the logged in user.
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em 400} & Missing user\+\_\+name or password. \\
+\hline
+{\em 401} & Invalid user credentials. \\
+\hline
+\end{DoxyExceptions}
+\Hypertarget{namespaceauthorization_aae54b215ccf64770ef2dfa8e2416aafd}\index{authorization@{authorization}!register@{register}}
+\index{register@{register}!authorization@{authorization}}
+\doxyparagraph{\texorpdfstring{register()}{register()}}
+{\footnotesize\ttfamily \label{namespaceauthorization_aae54b215ccf64770ef2dfa8e2416aafd} 
+authorization.\+register (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Register a new user. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+name} & The username of the new user. \\
+\hline
+{\em password} & The password of the new user.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A dictionary containing the access token of the newly registered user.
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em 400} & Missing user\+\_\+name or password. \\
+\hline
+{\em 409} & User with given user\+\_\+name already exists. \\
+\hline
+\end{DoxyExceptions}
+
+
+\doxysubsubsection{Variable Documentation}
+\Hypertarget{namespaceauthorization_afe573febce812478e6e3ec1d00ddad45}\index{authorization@{authorization}!bp@{bp}}
+\index{bp@{bp}!authorization@{authorization}}
+\doxyparagraph{\texorpdfstring{bp}{bp}}
+{\footnotesize\ttfamily \label{namespaceauthorization_afe573febce812478e6e3ec1d00ddad45} 
+authorization.\+bp = Blueprint("{}auth"{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix="{}/api"{})}
+

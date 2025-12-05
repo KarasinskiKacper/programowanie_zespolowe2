@@ -1,0 +1,102 @@
+\doxysubsection{room Namespace Reference}
+\hypertarget{namespaceroom}{}\label{namespaceroom}\index{room@{room}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceroom_aa5e0ff6513634fb2095d1f59f471c77f}{handle\+\_\+join}} (data)
+\begin{DoxyCompactList}\small\item\em Handle a user joining a room. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceroom_a257683e7974885a6311956f010311195}{handle\+\_\+leave}} (data)
+\begin{DoxyCompactList}\small\item\em Handle a user leaving a room. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceroom_a88d0094f4b8caf526d6cf1ff40613150}{handle\+\_\+message}} (data)
+\begin{DoxyCompactList}\small\item\em Handle a message sent by a user to a room. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceroom_a72ea01209a938cfcb9ae7091bcbc792c}{handle\+\_\+watchdog}} (data)
+\begin{DoxyCompactList}\small\item\em Handle a watchdog event sent by a user. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespaceroom_aa5e0ff6513634fb2095d1f59f471c77f}\index{room@{room}!handle\_join@{handle\_join}}
+\index{handle\_join@{handle\_join}!room@{room}}
+\doxyparagraph{\texorpdfstring{handle\_join()}{handle\_join()}}
+{\footnotesize\ttfamily \label{namespaceroom_aa5e0ff6513634fb2095d1f59f471c77f} 
+room.\+handle\+\_\+join (\begin{DoxyParamCaption}\item[{}]{data}{}\end{DoxyParamCaption})}
+
+
+
+Handle a user joining a room. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A dictionary containing the user\+\_\+name and room\+\_\+id.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+If the user\+\_\+name or room\+\_\+id is missing, an error is emitted. 
+
+If the room is private and the user is not in the room, an error is emitted. 
+
+If the user joins the room successfully, user\+\_\+joined is emitted to the room. 
+\end{DoxyNote}
+\Hypertarget{namespaceroom_a257683e7974885a6311956f010311195}\index{room@{room}!handle\_leave@{handle\_leave}}
+\index{handle\_leave@{handle\_leave}!room@{room}}
+\doxyparagraph{\texorpdfstring{handle\_leave()}{handle\_leave()}}
+{\footnotesize\ttfamily \label{namespaceroom_a257683e7974885a6311956f010311195} 
+room.\+handle\+\_\+leave (\begin{DoxyParamCaption}\item[{}]{data}{}\end{DoxyParamCaption})}
+
+
+
+Handle a user leaving a room. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A dictionary containing the user\+\_\+name and room\+\_\+id.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+If the user\+\_\+name or room\+\_\+id is missing, an error is emitted. 
+
+If the user leaves the room successfully, user\+\_\+left is emitted to the room. 
+\end{DoxyNote}
+\Hypertarget{namespaceroom_a88d0094f4b8caf526d6cf1ff40613150}\index{room@{room}!handle\_message@{handle\_message}}
+\index{handle\_message@{handle\_message}!room@{room}}
+\doxyparagraph{\texorpdfstring{handle\_message()}{handle\_message()}}
+{\footnotesize\ttfamily \label{namespaceroom_a88d0094f4b8caf526d6cf1ff40613150} 
+room.\+handle\+\_\+message (\begin{DoxyParamCaption}\item[{}]{data}{}\end{DoxyParamCaption})}
+
+
+
+Handle a message sent by a user to a room. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A dictionary containing the room\+\_\+id, user\+\_\+name, and message.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+If the user\+\_\+name or room\+\_\+id is missing, an error is emitted. 
+
+If the message is missing, an error is emitted. 
+
+If the message is too long, an error is emitted. 
+
+If the message is sent successfully, new\+\_\+message is emitted to the room. 
+\end{DoxyNote}
+\Hypertarget{namespaceroom_a72ea01209a938cfcb9ae7091bcbc792c}\index{room@{room}!handle\_watchdog@{handle\_watchdog}}
+\index{handle\_watchdog@{handle\_watchdog}!room@{room}}
+\doxyparagraph{\texorpdfstring{handle\_watchdog()}{handle\_watchdog()}}
+{\footnotesize\ttfamily \label{namespaceroom_a72ea01209a938cfcb9ae7091bcbc792c} 
+room.\+handle\+\_\+watchdog (\begin{DoxyParamCaption}\item[{}]{data}{}\end{DoxyParamCaption})}
+
+
+
+Handle a watchdog event sent by a user. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A dictionary containing the user\+\_\+name.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+If the user\+\_\+name is missing, an error is emitted. 
+
+If the watchdog event is sent successfully, update\+\_\+user\+\_\+last\+\_\+seen is called with the user\+\_\+name. 
+\end{DoxyNote}

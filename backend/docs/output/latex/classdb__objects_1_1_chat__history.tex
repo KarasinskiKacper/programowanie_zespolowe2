@@ -1,0 +1,119 @@
+\doxysubsection{db\+\_\+objects.\+Chat\+\_\+history Class Reference}
+\hypertarget{classdb__objects_1_1_chat__history}{}\label{classdb__objects_1_1_chat__history}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+
+
+\doxylink{classdb__objects_1_1_chat__history}{Chat\+\_\+history} model representing a message in a chat room.  
+
+
+Inheritance diagram for db\+\_\+objects.\+Chat\+\_\+history\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classdb__objects_1_1_chat__history}
+\end{center}
+\end{figure}
+\doxysubsubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_chat__history_a3281f3cbd7eb9d79df2597e5a157310e}{to\+\_\+dict}} (self)
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classdb__objects_1_1_chat__history}{Chat\+\_\+history} instance to a dictionary representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_chat__history_a7077498b39f763d34027fab9a865efe7}{message\+\_\+id}} = db.\+Column(db.\+Integer, primary\+\_\+key=True, autoincrement=True)
+\begin{DoxyCompactList}\small\item\em Primary key, unique identifier for each message. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_chat__history_a98e8c4c821730263fe663ba759ec3b51}{room\+\_\+id}} = db.\+Column(db.\+Integer, nullable=False)
+\begin{DoxyCompactList}\small\item\em Foreign key reference to the chat room containing this message. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_chat__history_af707a6c6cfe275f0e5f854ad9e391d32}{user\+\_\+name}} = db.\+Column(db.\+String(48), nullable=False)
+\begin{DoxyCompactList}\small\item\em Name of the user who sent the message (max 48 characters). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_chat__history_ac73f3d2e65b53f8b09109f6247e1329a}{message}} = db.\+Column(db.\+String(1000), nullable=False)
+\begin{DoxyCompactList}\small\item\em The content of the chat message (max 1000 characters). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_chat__history_a449e8778f4e642cdd00d91e3a0f4a690}{message\+\_\+date}} = db.\+Column(db.\+Date\+Time, nullable=False, server\+\_\+default=func.\+now())
+\begin{DoxyCompactList}\small\item\em Timestamp when the message was created. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{classdb__objects_1_1_chat__history_ae9b5fe1aaf78a98d4ad1cabe67f301af}{\+\_\+\+\_\+tablename\+\_\+\+\_\+}} = "{}chat\+\_\+history"{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+\doxylink{classdb__objects_1_1_chat__history}{Chat\+\_\+history} model representing a message in a chat room. 
+
+\doxysubsubsection{Member Function Documentation}
+\Hypertarget{classdb__objects_1_1_chat__history_a3281f3cbd7eb9d79df2597e5a157310e}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!to\_dict@{to\_dict}}
+\index{to\_dict@{to\_dict}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{to\_dict()}{to\_dict()}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_a3281f3cbd7eb9d79df2597e5a157310e} 
+db\+\_\+objects.\+Chat\+\_\+history.\+to\+\_\+dict (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+Converts the \doxylink{classdb__objects_1_1_chat__history}{Chat\+\_\+history} instance to a dictionary representation. 
+
+\begin{DoxyReturn}{Returns}
+Dictionary with keys\+: chat\+\_\+id, room\+\_\+id, user\+\_\+name, message, create\+\_\+date. 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Member Data Documentation}
+\Hypertarget{classdb__objects_1_1_chat__history_ae9b5fe1aaf78a98d4ad1cabe67f301af}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!\_\_tablename\_\_@{\_\_tablename\_\_}}
+\index{\_\_tablename\_\_@{\_\_tablename\_\_}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{\_\_tablename\_\_}{\_\_tablename\_\_}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_ae9b5fe1aaf78a98d4ad1cabe67f301af} 
+str db\+\_\+objects.\+Chat\+\_\+history.\+\_\+\+\_\+tablename\+\_\+\+\_\+ = "{}chat\+\_\+history"{}\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+\Hypertarget{classdb__objects_1_1_chat__history_ac73f3d2e65b53f8b09109f6247e1329a}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!message@{message}}
+\index{message@{message}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{message}{message}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_ac73f3d2e65b53f8b09109f6247e1329a} 
+db\+\_\+objects.\+Chat\+\_\+history.\+message = db.\+Column(db.\+String(1000), nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The content of the chat message (max 1000 characters). 
+
+\Hypertarget{classdb__objects_1_1_chat__history_a449e8778f4e642cdd00d91e3a0f4a690}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!message\_date@{message\_date}}
+\index{message\_date@{message\_date}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{message\_date}{message\_date}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_a449e8778f4e642cdd00d91e3a0f4a690} 
+db\+\_\+objects.\+Chat\+\_\+history.\+message\+\_\+date = db.\+Column(db.\+Date\+Time, nullable=False, server\+\_\+default=func.\+now())\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Timestamp when the message was created. 
+
+Defaults to the current server time. \Hypertarget{classdb__objects_1_1_chat__history_a7077498b39f763d34027fab9a865efe7}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!message\_id@{message\_id}}
+\index{message\_id@{message\_id}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{message\_id}{message\_id}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_a7077498b39f763d34027fab9a865efe7} 
+db\+\_\+objects.\+Chat\+\_\+history.\+message\+\_\+id = db.\+Column(db.\+Integer, primary\+\_\+key=True, autoincrement=True)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Primary key, unique identifier for each message. 
+
+Automatically incremented. \Hypertarget{classdb__objects_1_1_chat__history_a98e8c4c821730263fe663ba759ec3b51}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!room\_id@{room\_id}}
+\index{room\_id@{room\_id}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{room\_id}{room\_id}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_a98e8c4c821730263fe663ba759ec3b51} 
+db\+\_\+objects.\+Chat\+\_\+history.\+room\+\_\+id = db.\+Column(db.\+Integer, nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Foreign key reference to the chat room containing this message. 
+
+\Hypertarget{classdb__objects_1_1_chat__history_af707a6c6cfe275f0e5f854ad9e391d32}\index{db\_objects.Chat\_history@{db\_objects.Chat\_history}!user\_name@{user\_name}}
+\index{user\_name@{user\_name}!db\_objects.Chat\_history@{db\_objects.Chat\_history}}
+\doxyparagraph{\texorpdfstring{user\_name}{user\_name}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_chat__history_af707a6c6cfe275f0e5f854ad9e391d32} 
+db\+\_\+objects.\+Chat\+\_\+history.\+user\+\_\+name = db.\+Column(db.\+String(48), nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Name of the user who sent the message (max 48 characters). 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{db__objects_8py}{db\+\_\+objects.\+py}}\end{DoxyCompactItemize}

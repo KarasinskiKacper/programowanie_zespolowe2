@@ -1,0 +1,85 @@
+\doxysubsection{db\+\_\+objects.\+Users\+\_\+room Class Reference}
+\hypertarget{classdb__objects_1_1_users__room}{}\label{classdb__objects_1_1_users__room}\index{db\_objects.Users\_room@{db\_objects.Users\_room}}
+
+
+Database model representing the association between users and rooms.  
+
+
+Inheritance diagram for db\+\_\+objects.\+Users\+\_\+room\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classdb__objects_1_1_users__room}
+\end{center}
+\end{figure}
+\doxysubsubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_users__room_a3c37326aecd16108e0cc0b96bd12b33b}{to\+\_\+dict}} (self)
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classdb__objects_1_1_users__room}{Users\+\_\+room} instance to a dictionary representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_users__room_a44b6fe9377aebf7ce35add38e177b7a0}{user\+\_\+name}} = db.\+Column(db.\+String(48), Foreign\+Key("{}users.\+user\+\_\+name"{}), primary\+\_\+key=True)
+\begin{DoxyCompactList}\small\item\em Foreign key reference to the user\textquotesingle{}s user\+\_\+name in the users table. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_users__room_a05c84df89e445c65f07fdcb4776d3b0c}{room\+\_\+id}} = db.\+Column(db.\+Integer, Foreign\+Key("{}rooms.\+room\+\_\+id"{}), primary\+\_\+key=True)
+\begin{DoxyCompactList}\small\item\em Foreign key reference to the room\textquotesingle{}s ID in the rooms table. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{classdb__objects_1_1_users__room_ac77d1e25583fc3d900e18e0fe4c9ffc5}{\+\_\+\+\_\+tablename\+\_\+\+\_\+}} = "{}users\+\_\+room"{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+Database model representing the association between users and rooms. 
+
+This model creates a many-\/to-\/many relationship between the \doxylink{classdb__objects_1_1_users}{Users} and \doxylink{classdb__objects_1_1_rooms}{Rooms} tables, allowing multiple users to be associated with multiple rooms. 
+
+\doxysubsubsection{Member Function Documentation}
+\Hypertarget{classdb__objects_1_1_users__room_a3c37326aecd16108e0cc0b96bd12b33b}\index{db\_objects.Users\_room@{db\_objects.Users\_room}!to\_dict@{to\_dict}}
+\index{to\_dict@{to\_dict}!db\_objects.Users\_room@{db\_objects.Users\_room}}
+\doxyparagraph{\texorpdfstring{to\_dict()}{to\_dict()}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users__room_a3c37326aecd16108e0cc0b96bd12b33b} 
+db\+\_\+objects.\+Users\+\_\+room.\+to\+\_\+dict (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+Converts the \doxylink{classdb__objects_1_1_users__room}{Users\+\_\+room} instance to a dictionary representation. 
+
+\begin{DoxyReturn}{Returns}
+Dictionary containing user\+\_\+name and room\+\_\+id. 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Member Data Documentation}
+\Hypertarget{classdb__objects_1_1_users__room_ac77d1e25583fc3d900e18e0fe4c9ffc5}\index{db\_objects.Users\_room@{db\_objects.Users\_room}!\_\_tablename\_\_@{\_\_tablename\_\_}}
+\index{\_\_tablename\_\_@{\_\_tablename\_\_}!db\_objects.Users\_room@{db\_objects.Users\_room}}
+\doxyparagraph{\texorpdfstring{\_\_tablename\_\_}{\_\_tablename\_\_}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users__room_ac77d1e25583fc3d900e18e0fe4c9ffc5} 
+str db\+\_\+objects.\+Users\+\_\+room.\+\_\+\+\_\+tablename\+\_\+\+\_\+ = "{}users\+\_\+room"{}\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+\Hypertarget{classdb__objects_1_1_users__room_a05c84df89e445c65f07fdcb4776d3b0c}\index{db\_objects.Users\_room@{db\_objects.Users\_room}!room\_id@{room\_id}}
+\index{room\_id@{room\_id}!db\_objects.Users\_room@{db\_objects.Users\_room}}
+\doxyparagraph{\texorpdfstring{room\_id}{room\_id}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users__room_a05c84df89e445c65f07fdcb4776d3b0c} 
+db\+\_\+objects.\+Users\+\_\+room.\+room\+\_\+id = db.\+Column(db.\+Integer, Foreign\+Key("{}rooms.\+room\+\_\+id"{}), primary\+\_\+key=True)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Foreign key reference to the room\textquotesingle{}s ID in the rooms table. 
+
+Part of the composite primary key. \Hypertarget{classdb__objects_1_1_users__room_a44b6fe9377aebf7ce35add38e177b7a0}\index{db\_objects.Users\_room@{db\_objects.Users\_room}!user\_name@{user\_name}}
+\index{user\_name@{user\_name}!db\_objects.Users\_room@{db\_objects.Users\_room}}
+\doxyparagraph{\texorpdfstring{user\_name}{user\_name}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users__room_a44b6fe9377aebf7ce35add38e177b7a0} 
+db\+\_\+objects.\+Users\+\_\+room.\+user\+\_\+name = db.\+Column(db.\+String(48), Foreign\+Key("{}users.\+user\+\_\+name"{}), primary\+\_\+key=True)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Foreign key reference to the user\textquotesingle{}s user\+\_\+name in the users table. 
+
+Part of the composite primary key. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{db__objects_8py}{db\+\_\+objects.\+py}}\end{DoxyCompactItemize}

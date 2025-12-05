@@ -1,0 +1,95 @@
+/** @mainpage Documentation for "Komunikator" backend
+
+## Overview
+
+Komunikator app backend is built with Flask, Flask-SocketIO, and SQLAlchemy. It provides a REST API and WebSocket interface for user management, room-based messaging, and real-time presence tracking.
+
+## Features
+
+### User Management
+- **Authentication**: JWT-based user registration and login system
+- **User Statistics**: Track message counts and room memberships
+- **Online Status**: Real-time presence detection with automatic offline detection after inactivity
+
+### Room Management
+- **Public Rooms**: Open rooms visible to all users
+- **Private Rooms**: Invite-only rooms with unique access keys
+- **Room Operations**: Create, edit, delete, join, and leave rooms
+- **User Lists**: View all users in a room with real-time updates
+- **Room Moderation**: Room owners can kick users from their rooms
+
+### Messaging
+- **Real-Time Messages**: WebSocket-based instant message delivery
+- **Chat History**: Persistent message storage with timestamps
+- **Message Validation**: Automatic validation of message length and content
+- **Broadcast System**: Efficient message distribution to room members
+
+### Activity Tracking
+- **Presence System**: Tracks user online/offline status across all rooms
+- **Watchdog Mechanism**: Periodic heartbeat to maintain user presence
+- **Automatic Cleanup**: Background task removes inactive users after timeout
+- **Cross-Room Updates**: User status changes broadcast to all relevant rooms
+
+## Architecture
+
+### Database Layer (`db_objects.py`)
+Four main models represent the application's data:
+- **Users**: User accounts with credentials
+- **Rooms**: Chat rooms with public/private access control
+- **Users_room**: Many-to-many relationship between users and rooms
+- **Chat_history**: Persistent message storage
+
+### REST API Routes
+- `/api/register` - User registration
+- `/api/login` - User authentication
+- `/api/user/change_password` - Password modification
+- `/api/user/get_info` - User statistics
+- `/api/users/online` - List of users online
+- `/api/rooms` - Public room listing
+- `/api/room/*` - Room management operations
+- `/api/user_rooms` - User's room memberships
+- `/api/user/list` - List of users in a room
+- `/api/user_kick` - Forceful removal of a user by the room owner
+- `/api/chat_history` - Historical messages
+
+### WebSocket Events
+- `join` - Connect to a room (sent to server)
+- `leave` - Disconnect from a room (sent to server)
+- `message` - Send a message to a room (sent to server)
+- `watchdog` - Maintain user presence (sent to server)
+- `user_list_updated` - Notify when user list was updated (sent to client)
+- `room_list_updated` - Notify when room list was updated (sent to client)
+- `user_online` - Notify when user status was changed to online (sent to rooms)
+- `user_offline` - Notify when user status was changed to offline (sent to rooms)
+- `user_joined` - Response for successful join event (sent to room)
+- `user_left` - Response for successful leave event (sent to room)
+- `new` - Response for message event (sent to room)
+- `error` - Response on event failure (sent to client)
+
+### Application State (`app_state.py`)
+In-memory state management:
+- **online_users**: Set of currently active users
+- **user_last_seen**: Timestamp tracking for activity detection
+- **room_users**: Mapping of rooms to their current users
+- **user_rooms**: Mapping of users to their joined rooms
+
+## Technology Stack
+- **Flask**: Web framework
+- **Flask-SocketIO**: WebSocket support
+- **SQLAlchemy**: ORM and database management
+- **Flask-JWT-Extended**: JWT authentication
+- **MySQL**: Database backend
+- **Flask-CORS**: Cross-origin resource sharing
+
+## Getting Started
+
+Configure the following environment variables:
+- `DB_USER` - Database username
+- `DB_PASSWORD` - Database password
+- `DB_HOST` - Database host
+- `DB_PORT` - Database port
+- `DB_NAME` - Database name
+- `JWT_SECRET_KEY` - Secret key for JWT tokens
+
+@authors Paweł Dyczek, Paweł Herzyk, Mikołaj Całus
+*/

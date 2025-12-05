@@ -1,0 +1,133 @@
+\doxysubsection{db\+\_\+objects.\+Rooms Class Reference}
+\hypertarget{classdb__objects_1_1_rooms}{}\label{classdb__objects_1_1_rooms}\index{db\_objects.Rooms@{db\_objects.Rooms}}
+
+
+Database model representing a chat room.  
+
+
+Inheritance diagram for db\+\_\+objects.\+Rooms\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classdb__objects_1_1_rooms}
+\end{center}
+\end{figure}
+\doxysubsubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_a6ae56903cd63613a59cf772ad8194ffc}{to\+\_\+dict}} (self)
+\begin{DoxyCompactList}\small\item\em Converts the room object to a dictionary representation for serialization. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_a70cd2674704ab88c641150407a7efc23}{room\+\_\+id}} = db.\+Column(db.\+Integer, primary\+\_\+key=True, autoincrement=True)
+\begin{DoxyCompactList}\small\item\em Unique identifier for the room. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_a44cbec08f80548fc54414121f1806664}{room\+\_\+name}} = db.\+Column(db.\+String(64), nullable=False)
+\begin{DoxyCompactList}\small\item\em Name of the room. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_a735c1033f6e8aaffbccc27e69f85c588}{room\+\_\+owner}} = db.\+Column(db.\+String(48), nullable=False)
+\begin{DoxyCompactList}\small\item\em Username of the room owner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_aeaa2e71baad14f80b7bcbc9c64c5d71b}{create\+\_\+date}} = db.\+Column(db.\+Date\+Time, nullable=False)
+\begin{DoxyCompactList}\small\item\em Timestamp when the room was created. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_acab1e1026a97ed7f0dc6b3e8e7316e6b}{is\+\_\+private}} = db.\+Column(db.\+Boolean, nullable=False)
+\begin{DoxyCompactList}\small\item\em Flag indicating whether the room is private (True) or public (False). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_rooms_a39e623cbe438228de68b191c03db5b3b}{access\+\_\+key}} = db.\+Column(db.\+String(64), nullable=True, unique=True)
+\begin{DoxyCompactList}\small\item\em Unique access key for private rooms. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{classdb__objects_1_1_rooms_a0604a6d0c3c912cb6aecc5c1efaea2b2}{\+\_\+\+\_\+tablename\+\_\+\+\_\+}} = "{}rooms"{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+Database model representing a chat room. 
+
+This model defines the structure for storing room information in the database. \doxylink{classdb__objects_1_1_rooms}{Rooms} can be public or private, and private rooms require an access key for entry. 
+
+\doxysubsubsection{Member Function Documentation}
+\Hypertarget{classdb__objects_1_1_rooms_a6ae56903cd63613a59cf772ad8194ffc}\index{db\_objects.Rooms@{db\_objects.Rooms}!to\_dict@{to\_dict}}
+\index{to\_dict@{to\_dict}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{to\_dict()}{to\_dict()}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_a6ae56903cd63613a59cf772ad8194ffc} 
+db\+\_\+objects.\+Rooms.\+to\+\_\+dict (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+Converts the room object to a dictionary representation for serialization. 
+
+\begin{DoxyReturn}{Returns}
+Dictionary containing all room attributes. 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Member Data Documentation}
+\Hypertarget{classdb__objects_1_1_rooms_a0604a6d0c3c912cb6aecc5c1efaea2b2}\index{db\_objects.Rooms@{db\_objects.Rooms}!\_\_tablename\_\_@{\_\_tablename\_\_}}
+\index{\_\_tablename\_\_@{\_\_tablename\_\_}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{\_\_tablename\_\_}{\_\_tablename\_\_}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_a0604a6d0c3c912cb6aecc5c1efaea2b2} 
+str db\+\_\+objects.\+Rooms.\+\_\+\+\_\+tablename\+\_\+\+\_\+ = "{}rooms"{}\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+\Hypertarget{classdb__objects_1_1_rooms_a39e623cbe438228de68b191c03db5b3b}\index{db\_objects.Rooms@{db\_objects.Rooms}!access\_key@{access\_key}}
+\index{access\_key@{access\_key}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{access\_key}{access\_key}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_a39e623cbe438228de68b191c03db5b3b} 
+db\+\_\+objects.\+Rooms.\+access\+\_\+key = db.\+Column(db.\+String(64), nullable=True, unique=True)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Unique access key for private rooms. 
+
+Maximum 64 characters. Optional and unique. \Hypertarget{classdb__objects_1_1_rooms_aeaa2e71baad14f80b7bcbc9c64c5d71b}\index{db\_objects.Rooms@{db\_objects.Rooms}!create\_date@{create\_date}}
+\index{create\_date@{create\_date}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{create\_date}{create\_date}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_aeaa2e71baad14f80b7bcbc9c64c5d71b} 
+db\+\_\+objects.\+Rooms.\+create\+\_\+date = db.\+Column(db.\+Date\+Time, nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Timestamp when the room was created. 
+
+Required. \Hypertarget{classdb__objects_1_1_rooms_acab1e1026a97ed7f0dc6b3e8e7316e6b}\index{db\_objects.Rooms@{db\_objects.Rooms}!is\_private@{is\_private}}
+\index{is\_private@{is\_private}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{is\_private}{is\_private}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_acab1e1026a97ed7f0dc6b3e8e7316e6b} 
+db\+\_\+objects.\+Rooms.\+is\+\_\+private = db.\+Column(db.\+Boolean, nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Flag indicating whether the room is private (True) or public (False). 
+
+Required. \Hypertarget{classdb__objects_1_1_rooms_a70cd2674704ab88c641150407a7efc23}\index{db\_objects.Rooms@{db\_objects.Rooms}!room\_id@{room\_id}}
+\index{room\_id@{room\_id}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{room\_id}{room\_id}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_a70cd2674704ab88c641150407a7efc23} 
+db\+\_\+objects.\+Rooms.\+room\+\_\+id = db.\+Column(db.\+Integer, primary\+\_\+key=True, autoincrement=True)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Unique identifier for the room. 
+
+Auto-\/incremented primary key. \Hypertarget{classdb__objects_1_1_rooms_a44cbec08f80548fc54414121f1806664}\index{db\_objects.Rooms@{db\_objects.Rooms}!room\_name@{room\_name}}
+\index{room\_name@{room\_name}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{room\_name}{room\_name}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_a44cbec08f80548fc54414121f1806664} 
+db\+\_\+objects.\+Rooms.\+room\+\_\+name = db.\+Column(db.\+String(64), nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Name of the room. 
+
+Maximum 64 characters. Required. \Hypertarget{classdb__objects_1_1_rooms_a735c1033f6e8aaffbccc27e69f85c588}\index{db\_objects.Rooms@{db\_objects.Rooms}!room\_owner@{room\_owner}}
+\index{room\_owner@{room\_owner}!db\_objects.Rooms@{db\_objects.Rooms}}
+\doxyparagraph{\texorpdfstring{room\_owner}{room\_owner}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_rooms_a735c1033f6e8aaffbccc27e69f85c588} 
+db\+\_\+objects.\+Rooms.\+room\+\_\+owner = db.\+Column(db.\+String(48), nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Username of the room owner. 
+
+Maximum 48 characters. Required. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{db__objects_8py}{db\+\_\+objects.\+py}}\end{DoxyCompactItemize}

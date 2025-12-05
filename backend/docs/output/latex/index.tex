@@ -1,0 +1,99 @@
+\doxysection{Documentation for "{}\+Komunikator"{} backend}
+\hypertarget{index}{}\label{index}\index{Documentation for "{}Komunikator"{} backend@{Documentation for ""Komunikator"" backend}}
+\hypertarget{index_autotoc_md0}{}\doxysubsubsection{\texorpdfstring{Overview}{Overview}}\label{index_autotoc_md0}
+Komunikator app backend is built with Flask, Flask-\/\+Socket\+IO, and SQLAlchemy. It provides a REST API and Web\+Socket interface for user management, room-\/based messaging, and real-\/time presence tracking.\hypertarget{index_autotoc_md1}{}\doxysubsubsection{\texorpdfstring{Features}{Features}}\label{index_autotoc_md1}
+\hypertarget{index_autotoc_md2}{}\doxysubsubsubsection{\texorpdfstring{User Management}{User Management}}\label{index_autotoc_md2}
+
+\begin{DoxyItemize}
+\item {\bfseries{Authentication}}\+: JWT-\/based user registration and login system
+\item {\bfseries{User Statistics}}\+: Track message counts and room memberships
+\item {\bfseries{Online Status}}\+: Real-\/time presence detection with automatic offline detection after inactivity
+\end{DoxyItemize}\hypertarget{index_autotoc_md3}{}\doxysubsubsubsection{\texorpdfstring{Room Management}{Room Management}}\label{index_autotoc_md3}
+
+\begin{DoxyItemize}
+\item {\bfseries{Public Rooms}}\+: Open rooms visible to all users
+\item {\bfseries{Private Rooms}}\+: Invite-\/only rooms with unique access keys
+\item {\bfseries{Room Operations}}\+: Create, edit, delete, join, and leave rooms
+\item {\bfseries{User Lists}}\+: View all users in a room with real-\/time updates
+\item {\bfseries{Room Moderation}}\+: Room owners can kick users from their rooms
+\end{DoxyItemize}\hypertarget{index_autotoc_md4}{}\doxysubsubsubsection{\texorpdfstring{Messaging}{Messaging}}\label{index_autotoc_md4}
+
+\begin{DoxyItemize}
+\item {\bfseries{Real-\/\+Time Messages}}\+: Web\+Socket-\/based instant message delivery
+\item {\bfseries{Chat History}}\+: Persistent message storage with timestamps
+\item {\bfseries{Message Validation}}\+: Automatic validation of message length and content
+\item {\bfseries{Broadcast System}}\+: Efficient message distribution to room members
+\end{DoxyItemize}\hypertarget{index_autotoc_md5}{}\doxysubsubsubsection{\texorpdfstring{Activity Tracking}{Activity Tracking}}\label{index_autotoc_md5}
+
+\begin{DoxyItemize}
+\item {\bfseries{Presence System}}\+: Tracks user online/offline status across all rooms
+\item {\bfseries{Watchdog Mechanism}}\+: Periodic heartbeat to maintain user presence
+\item {\bfseries{Automatic Cleanup}}\+: Background task removes inactive users after timeout
+\item {\bfseries{Cross-\/\+Room Updates}}\+: User status changes broadcast to all relevant rooms
+\end{DoxyItemize}\hypertarget{index_autotoc_md6}{}\doxysubsubsection{\texorpdfstring{Architecture}{Architecture}}\label{index_autotoc_md6}
+\hypertarget{index_autotoc_md7}{}\doxysubsubsubsection{\texorpdfstring{Database Layer ({\ttfamily db\+\_\+objects.\+py})}{Database Layer ({\ttfamily db\+\_\+objects.\+py})}}\label{index_autotoc_md7}
+Four main models represent the application\textquotesingle{}s data\+:
+\begin{DoxyItemize}
+\item {\bfseries{Users}}\+: User accounts with credentials
+\item {\bfseries{Rooms}}\+: Chat rooms with public/private access control
+\item {\bfseries{Users\+\_\+room}}\+: Many-\/to-\/many relationship between users and rooms
+\item {\bfseries{Chat\+\_\+history}}\+: Persistent message storage
+\end{DoxyItemize}\hypertarget{index_autotoc_md8}{}\doxysubsubsubsection{\texorpdfstring{REST API Routes}{REST API Routes}}\label{index_autotoc_md8}
+
+\begin{DoxyItemize}
+\item {\ttfamily /api/register} -\/ User registration
+\item {\ttfamily /api/login} -\/ User authentication
+\item {\ttfamily /api/user/change\+\_\+password} -\/ Password modification
+\item {\ttfamily /api/user/get\+\_\+info} -\/ User statistics
+\item {\ttfamily /api/users/online} -\/ List of users online
+\item {\ttfamily /api/rooms} -\/ Public room listing
+\item {\ttfamily /api/room/\texorpdfstring{$\ast$}{*}} -\/ Room management operations
+\item {\ttfamily /api/user\+\_\+rooms} -\/ User\textquotesingle{}s room memberships
+\item {\ttfamily /api/user/list} -\/ List of users in a room
+\item {\ttfamily /api/user\+\_\+kick} -\/ Forceful removal of a user by the room owner
+\item {\ttfamily /api/chat\+\_\+history} -\/ Historical messages
+\end{DoxyItemize}\hypertarget{index_autotoc_md9}{}\doxysubsubsubsection{\texorpdfstring{Web\+Socket Events}{Web\+Socket Events}}\label{index_autotoc_md9}
+
+\begin{DoxyItemize}
+\item {\ttfamily join} -\/ Connect to a room (sent to server)
+\item {\ttfamily leave} -\/ Disconnect from a room (sent to server)
+\item {\ttfamily message} -\/ Send a message to a room (sent to server)
+\item {\ttfamily watchdog} -\/ Maintain user presence (sent to server)
+\item {\ttfamily user\+\_\+list\+\_\+updated} -\/ Notify when user list was updated (sent to client)
+\item {\ttfamily room\+\_\+list\+\_\+updated} -\/ Notify when room list was updated (sent to client)
+\item {\ttfamily user\+\_\+online} -\/ Notify when user status was changed to online (sent to rooms)
+\item {\ttfamily user\+\_\+offline} -\/ Notify when user status was changed to offline (sent to rooms)
+\item {\ttfamily user\+\_\+joined} -\/ Response for successful join event (sent to room)
+\item {\ttfamily user\+\_\+left} -\/ Response for successful leave event (sent to room)
+\item {\ttfamily new} -\/ Response for message event (sent to room)
+\item {\ttfamily error} -\/ Response on event failure (sent to client)
+\end{DoxyItemize}\hypertarget{index_autotoc_md10}{}\doxysubsubsubsection{\texorpdfstring{Application State ({\ttfamily app\+\_\+state.\+py})}{Application State ({\ttfamily app\+\_\+state.\+py})}}\label{index_autotoc_md10}
+In-\/memory state management\+:
+\begin{DoxyItemize}
+\item {\bfseries{online\+\_\+users}}\+: Set of currently active users
+\item {\bfseries{user\+\_\+last\+\_\+seen}}\+: Timestamp tracking for activity detection
+\item {\bfseries{room\+\_\+users}}\+: Mapping of rooms to their current users
+\item {\bfseries{\doxylink{namespaceuser__rooms}{user\+\_\+rooms}}}\+: Mapping of users to their joined rooms
+\end{DoxyItemize}\hypertarget{index_autotoc_md11}{}\doxysubsubsection{\texorpdfstring{Technology Stack}{Technology Stack}}\label{index_autotoc_md11}
+
+\begin{DoxyItemize}
+\item {\bfseries{Flask}}\+: Web framework
+\item {\bfseries{Flask-\/\+Socket\+IO}}\+: Web\+Socket support
+\item {\bfseries{SQLAlchemy}}\+: ORM and database management
+\item {\bfseries{Flask-\/\+JWT-\/\+Extended}}\+: JWT authentication
+\item {\bfseries{My\+SQL}}\+: Database backend
+\item {\bfseries{Flask-\/\+CORS}}\+: Cross-\/origin resource sharing
+\end{DoxyItemize}\hypertarget{index_autotoc_md12}{}\doxysubsubsection{\texorpdfstring{Getting Started}{Getting Started}}\label{index_autotoc_md12}
+Configure the following environment variables\+:
+\begin{DoxyItemize}
+\item {\ttfamily DB\+\_\+\+USER} -\/ Database username
+\item {\ttfamily DB\+\_\+\+PASSWORD} -\/ Database password
+\item {\ttfamily DB\+\_\+\+HOST} -\/ Database host
+\item {\ttfamily DB\+\_\+\+PORT} -\/ Database port
+\item {\ttfamily DB\+\_\+\+NAME} -\/ Database name
+\item {\ttfamily JWT\+\_\+\+SECRET\+\_\+\+KEY} -\/ Secret key for JWT tokens
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Authors}
+Paweł Dyczek, Paweł Herzyk, Mikołaj Całus 
+\end{DoxyAuthor}

@@ -1,0 +1,49 @@
+\doxysubsection{chat\+\_\+history Namespace Reference}
+\hypertarget{namespacechat__history}{}\label{namespacechat__history}\index{chat\_history@{chat\_history}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacechat__history_afb72d9fce350168c549eac625ebc58e4}{get\+\_\+chat\+\_\+history}} ()
+\begin{DoxyCompactList}\small\item\em Get the chat history of a room by its id. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacechat__history_af709b59804af16d0220914159aeaa508}{bp}} = Blueprint(\textquotesingle{}chat\+\_\+history\textquotesingle{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix=\textquotesingle{}/api\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespacechat__history_afb72d9fce350168c549eac625ebc58e4}\index{chat\_history@{chat\_history}!get\_chat\_history@{get\_chat\_history}}
+\index{get\_chat\_history@{get\_chat\_history}!chat\_history@{chat\_history}}
+\doxyparagraph{\texorpdfstring{get\_chat\_history()}{get\_chat\_history()}}
+{\footnotesize\ttfamily \label{namespacechat__history_afb72d9fce350168c549eac625ebc58e4} 
+chat\+\_\+history.\+get\+\_\+chat\+\_\+history (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Get the chat history of a room by its id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em room\+\_\+id} & The id of the room to get the chat history for.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A list of chat history messages, each containing the message\+\_\+id, room\+\_\+id, user\+\_\+name, message, and create\+\_\+date of the message.
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em 400} & If the room\+\_\+id parameter is missing. \\
+\hline
+{\em 404} & If the room is not found. \\
+\hline
+\end{DoxyExceptions}
+
+
+\doxysubsubsection{Variable Documentation}
+\Hypertarget{namespacechat__history_af709b59804af16d0220914159aeaa508}\index{chat\_history@{chat\_history}!bp@{bp}}
+\index{bp@{bp}!chat\_history@{chat\_history}}
+\doxyparagraph{\texorpdfstring{bp}{bp}}
+{\footnotesize\ttfamily \label{namespacechat__history_af709b59804af16d0220914159aeaa508} 
+chat\+\_\+history.\+bp = Blueprint(\textquotesingle{}chat\+\_\+history\textquotesingle{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix=\textquotesingle{}/api\textquotesingle{})}
+

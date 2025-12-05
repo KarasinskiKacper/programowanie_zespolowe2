@@ -1,0 +1,83 @@
+\doxysubsection{db\+\_\+objects.\+Users Class Reference}
+\hypertarget{classdb__objects_1_1_users}{}\label{classdb__objects_1_1_users}\index{db\_objects.Users@{db\_objects.Users}}
+
+
+\doxylink{classdb__objects_1_1_users}{Users} model representing a user account in the database.  
+
+
+Inheritance diagram for db\+\_\+objects.\+Users\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classdb__objects_1_1_users}
+\end{center}
+\end{figure}
+\doxysubsubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_users_a421f59679867529ca237f53a9b53d5db}{to\+\_\+dict}} (self)
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classdb__objects_1_1_users}{Users} instance to a dictionary representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdb__objects_1_1_users_a70eb83abb444027bc3e3069ad5356565}{user\+\_\+name}} = db.\+Column(db.\+String(48), primary\+\_\+key=True)
+\begin{DoxyCompactList}\small\item\em The unique username, serves as the primary key. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classdb__objects_1_1_users_aa7aba681dc4e50f5d81e9679f010d1ad}{password}} = db.\+Column(db.\+String(128), nullable=False)
+\begin{DoxyCompactList}\small\item\em The password for the user account. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{classdb__objects_1_1_users_af12cf9a03baf793f61f14f8e44590614}{\+\_\+\+\_\+tablename\+\_\+\+\_\+}} = "{}users"{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+\doxylink{classdb__objects_1_1_users}{Users} model representing a user account in the database. 
+
+\doxysubsubsection{Member Function Documentation}
+\Hypertarget{classdb__objects_1_1_users_a421f59679867529ca237f53a9b53d5db}\index{db\_objects.Users@{db\_objects.Users}!to\_dict@{to\_dict}}
+\index{to\_dict@{to\_dict}!db\_objects.Users@{db\_objects.Users}}
+\doxyparagraph{\texorpdfstring{to\_dict()}{to\_dict()}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users_a421f59679867529ca237f53a9b53d5db} 
+db\+\_\+objects.\+Users.\+to\+\_\+dict (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+Converts the \doxylink{classdb__objects_1_1_users}{Users} instance to a dictionary representation. 
+
+\begin{DoxyReturn}{Returns}
+Dictionary containing user\+\_\+name and password. 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Member Data Documentation}
+\Hypertarget{classdb__objects_1_1_users_af12cf9a03baf793f61f14f8e44590614}\index{db\_objects.Users@{db\_objects.Users}!\_\_tablename\_\_@{\_\_tablename\_\_}}
+\index{\_\_tablename\_\_@{\_\_tablename\_\_}!db\_objects.Users@{db\_objects.Users}}
+\doxyparagraph{\texorpdfstring{\_\_tablename\_\_}{\_\_tablename\_\_}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users_af12cf9a03baf793f61f14f8e44590614} 
+str db\+\_\+objects.\+Users.\+\_\+\+\_\+tablename\+\_\+\+\_\+ = "{}users"{}\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+\Hypertarget{classdb__objects_1_1_users_aa7aba681dc4e50f5d81e9679f010d1ad}\index{db\_objects.Users@{db\_objects.Users}!password@{password}}
+\index{password@{password}!db\_objects.Users@{db\_objects.Users}}
+\doxyparagraph{\texorpdfstring{password}{password}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users_aa7aba681dc4e50f5d81e9679f010d1ad} 
+db\+\_\+objects.\+Users.\+password = db.\+Column(db.\+String(128), nullable=False)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The password for the user account. 
+
+Maximum 128 characters, required field. \Hypertarget{classdb__objects_1_1_users_a70eb83abb444027bc3e3069ad5356565}\index{db\_objects.Users@{db\_objects.Users}!user\_name@{user\_name}}
+\index{user\_name@{user\_name}!db\_objects.Users@{db\_objects.Users}}
+\doxyparagraph{\texorpdfstring{user\_name}{user\_name}}
+{\footnotesize\ttfamily \label{classdb__objects_1_1_users_a70eb83abb444027bc3e3069ad5356565} 
+db\+\_\+objects.\+Users.\+user\+\_\+name = db.\+Column(db.\+String(48), primary\+\_\+key=True)\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The unique username, serves as the primary key. 
+
+Maximum 48 characters. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{db__objects_8py}{db\+\_\+objects.\+py}}\end{DoxyCompactItemize}

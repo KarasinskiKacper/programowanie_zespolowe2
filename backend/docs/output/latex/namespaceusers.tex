@@ -1,0 +1,74 @@
+\doxysubsection{users Namespace Reference}
+\hypertarget{namespaceusers}{}\label{namespaceusers}\index{users@{users}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceusers_af9367f186bb1dbf1257b7367d192ba8a}{get\+\_\+online\+\_\+users}} ()
+\begin{DoxyCompactList}\small\item\em Get a list of online users for the current user. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceusers_a28b7da794ced75fcd89be77effbd9795}{change\+\_\+password}} ()
+\begin{DoxyCompactList}\small\item\em Change the password of the current user. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceusers_a63a40abf119db116252ba8ec67347789}{get\+\_\+user\+\_\+info}} ()
+\begin{DoxyCompactList}\small\item\em Get information about the current user. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceusers_ab3d72edd57d39fdba20d07ab46a45de8}{bp}} = Blueprint(\textquotesingle{}users\textquotesingle{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix=\textquotesingle{}/api\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespaceusers_a28b7da794ced75fcd89be77effbd9795}\index{users@{users}!change\_password@{change\_password}}
+\index{change\_password@{change\_password}!users@{users}}
+\doxyparagraph{\texorpdfstring{change\_password()}{change\_password()}}
+{\footnotesize\ttfamily \label{namespaceusers_a28b7da794ced75fcd89be77effbd9795} 
+users.\+change\+\_\+password (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Change the password of the current user. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em old\+\_\+password} & (str)\+: The current password of the user. \\
+\hline
+{\em new\+\_\+password} & (str)\+: The new password to set for the user.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A dictionary containing the message of the password change action. 
+\end{DoxyReturn}
+\Hypertarget{namespaceusers_af9367f186bb1dbf1257b7367d192ba8a}\index{users@{users}!get\_online\_users@{get\_online\_users}}
+\index{get\_online\_users@{get\_online\_users}!users@{users}}
+\doxyparagraph{\texorpdfstring{get\_online\_users()}{get\_online\_users()}}
+{\footnotesize\ttfamily \label{namespaceusers_af9367f186bb1dbf1257b7367d192ba8a} 
+users.\+get\+\_\+online\+\_\+users (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Get a list of online users for the current user. 
+
+\begin{DoxyReturn}{Returns}
+A list of online users, each containing the user\+\_\+name. 
+\end{DoxyReturn}
+\Hypertarget{namespaceusers_a63a40abf119db116252ba8ec67347789}\index{users@{users}!get\_user\_info@{get\_user\_info}}
+\index{get\_user\_info@{get\_user\_info}!users@{users}}
+\doxyparagraph{\texorpdfstring{get\_user\_info()}{get\_user\_info()}}
+{\footnotesize\ttfamily \label{namespaceusers_a63a40abf119db116252ba8ec67347789} 
+users.\+get\+\_\+user\+\_\+info (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Get information about the current user. 
+
+\begin{DoxyReturn}{Returns}
+A dictionary containing the count of messages sent by the user, the count of private and public rooms owned by the user, and the count of private and public rooms that the user is a member of. 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Variable Documentation}
+\Hypertarget{namespaceusers_ab3d72edd57d39fdba20d07ab46a45de8}\index{users@{users}!bp@{bp}}
+\index{bp@{bp}!users@{users}}
+\doxyparagraph{\texorpdfstring{bp}{bp}}
+{\footnotesize\ttfamily \label{namespaceusers_ab3d72edd57d39fdba20d07ab46a45de8} 
+users.\+bp = Blueprint(\textquotesingle{}users\textquotesingle{}, \+\_\+\+\_\+name\+\_\+\+\_\+, url\+\_\+prefix=\textquotesingle{}/api\textquotesingle{})}
+

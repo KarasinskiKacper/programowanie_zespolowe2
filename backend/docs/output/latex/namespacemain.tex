@@ -1,0 +1,90 @@
+\doxysubsection{main Namespace Reference}
+\hypertarget{namespacemain}{}\label{namespacemain}\index{main@{main}}
+\doxysubsubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacemain_a2760b7d0914664273d5d423561eeb2de}{initialize\+\_\+room\+\_\+users}} ()
+\begin{DoxyCompactList}\small\item\em Initialize the room\+\_\+users and \doxylink{namespaceuser__rooms}{user\+\_\+rooms} maps by iterating over all rooms and their users. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacemain_a0fdaa48330e284d49d01eb3d906798ce}{create\+\_\+app}} ()
+\begin{DoxyCompactList}\small\item\em Create a Flask app with the necessary configurations and routes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacemain_a5fa94f0581009434c7a63791944d6ff4}{app}} = \mbox{\hyperlink{namespacemain_a0fdaa48330e284d49d01eb3d906798ce}{create\+\_\+app}}()
+\item 
+\mbox{\hyperlink{namespacemain_a800974c07a8e7de9888fff8cd98a827e}{debug}}
+\item 
+\mbox{\hyperlink{namespacemain_a0c5b8ab1603c8c5b8db5e1128a757fea}{True}}
+\item 
+\mbox{\hyperlink{namespacemain_a0cf58d9b4a444874a8cf80fdf162b0fb}{host}}
+\item 
+\mbox{\hyperlink{namespacemain_a12fac67ac230690557ab76d3faa71d8c}{port}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\Hypertarget{namespacemain_a0fdaa48330e284d49d01eb3d906798ce}\index{main@{main}!create\_app@{create\_app}}
+\index{create\_app@{create\_app}!main@{main}}
+\doxyparagraph{\texorpdfstring{create\_app()}{create\_app()}}
+{\footnotesize\ttfamily \label{namespacemain_a0fdaa48330e284d49d01eb3d906798ce} 
+main.\+create\+\_\+app (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Create a Flask app with the necessary configurations and routes. 
+
+This function initializes a Flask app with CORS enabled, JWTManager configured, and SQLAlchemy configured with the database URI from the environment variables.
+
+It also registers the necessary blueprints for the routes.
+
+\begin{DoxyReturn}{Returns}
+The created Flask app. 
+\end{DoxyReturn}
+\Hypertarget{namespacemain_a2760b7d0914664273d5d423561eeb2de}\index{main@{main}!initialize\_room\_users@{initialize\_room\_users}}
+\index{initialize\_room\_users@{initialize\_room\_users}!main@{main}}
+\doxyparagraph{\texorpdfstring{initialize\_room\_users()}{initialize\_room\_users()}}
+{\footnotesize\ttfamily \label{namespacemain_a2760b7d0914664273d5d423561eeb2de} 
+main.\+initialize\+\_\+room\+\_\+users (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Initialize the room\+\_\+users and \doxylink{namespaceuser__rooms}{user\+\_\+rooms} maps by iterating over all rooms and their users. 
+
+Uses the update\+\_\+user\+\_\+room\+\_\+maps function to update the maps for each user in each room.
+
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\doxysubsubsection{Variable Documentation}
+\Hypertarget{namespacemain_a5fa94f0581009434c7a63791944d6ff4}\index{main@{main}!app@{app}}
+\index{app@{app}!main@{main}}
+\doxyparagraph{\texorpdfstring{app}{app}}
+{\footnotesize\ttfamily \label{namespacemain_a5fa94f0581009434c7a63791944d6ff4} 
+main.\+app = \mbox{\hyperlink{namespacemain_a0fdaa48330e284d49d01eb3d906798ce}{create\+\_\+app}}()}
+
+\Hypertarget{namespacemain_a800974c07a8e7de9888fff8cd98a827e}\index{main@{main}!debug@{debug}}
+\index{debug@{debug}!main@{main}}
+\doxyparagraph{\texorpdfstring{debug}{debug}}
+{\footnotesize\ttfamily \label{namespacemain_a800974c07a8e7de9888fff8cd98a827e} 
+main.\+debug}
+
+\Hypertarget{namespacemain_a0cf58d9b4a444874a8cf80fdf162b0fb}\index{main@{main}!host@{host}}
+\index{host@{host}!main@{main}}
+\doxyparagraph{\texorpdfstring{host}{host}}
+{\footnotesize\ttfamily \label{namespacemain_a0cf58d9b4a444874a8cf80fdf162b0fb} 
+main.\+host}
+
+\Hypertarget{namespacemain_a12fac67ac230690557ab76d3faa71d8c}\index{main@{main}!port@{port}}
+\index{port@{port}!main@{main}}
+\doxyparagraph{\texorpdfstring{port}{port}}
+{\footnotesize\ttfamily \label{namespacemain_a12fac67ac230690557ab76d3faa71d8c} 
+main.\+port}
+
+\Hypertarget{namespacemain_a0c5b8ab1603c8c5b8db5e1128a757fea}\index{main@{main}!True@{True}}
+\index{True@{True}!main@{main}}
+\doxyparagraph{\texorpdfstring{True}{True}}
+{\footnotesize\ttfamily \label{namespacemain_a0c5b8ab1603c8c5b8db5e1128a757fea} 
+main.\+True}
+
