@@ -388,7 +388,7 @@ export default function Page() {
     isConnected ? 1000 : null
   );
 
-  useEffect(() => {
+  useEffect(() => { 
     setShownRooms(rooms);
   }, [rooms]);
 
@@ -592,7 +592,10 @@ const LeftAside = ({
             }
           }}
         />
-        <Icon name="loop" className="w-8 h-8 text-[#6D66D2]" />
+        <div className="">
+            <Icon name="loop" className="w-6 h-6 text-[#6D66D2] hover:text-[#ACD266]" />
+        </div>
+        
       </div>
     </div>
   );
@@ -608,20 +611,30 @@ const Workspace = ({
 }) => {
   const messages = payload?.messages || [];
 
+const containerRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  const el = containerRef.current;
+  if (el) el.scrollTop = el.scrollHeight;
+}, [messages]);
+
   if (disable) return null;
   if (workspace === "ROOM_CHAT")
+    
     return (
-      <div className="flex-1 self-stretch inline-flex flex-col justify-start items-start overflow-hidden">
-        <div className="self-stretch flex-1 flex flex-col justify-end items-start">
-          {messages.map((message, index) => (
-            <Message
-              key={index}
-              author={message.author}
-              content={message.content}
-              date={message.date}
-              time={message.time}
-            />
-          ))}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="self-stretch h-[calc(100vh-192px)] overflow-y-scroll" ref={containerRef}>
+            <div className="self-stretch flex-1 flex flex-col">
+            {messages.map((message, index) => (
+                <Message
+                key={index}
+                author={message.author}
+                content={message.content}
+                date={message.date}
+                time={message.time}
+                />
+            ))}
+            </div>
         </div>
         <div className="self-stretch">
           <div className="pl-6 pr-2 pt-6 pb-6">
@@ -647,7 +660,7 @@ const Workspace = ({
                 disabled={payload.chosenRoom === null}
               />
               <div
-                className="w-16 h-16 bg-[#6D66D2] flex justify-center items-center gap-2.5"
+                className="w-16 h-16 bg-[#6D66D2] flex justify-center items-center gap-2.5 cursor-pointer hover:bg-[#ACD266]"
                 onClick={() => payload.sendMessage()}
               >
                 <Icon name="play" className="w-8 h-8 text-white" />
@@ -839,7 +852,7 @@ const RightAside = ({
               {members.map((member, index) => (
                 <div
                   key={index}
-                  className="self-stretch text-black text-xl font-light font-['Inter']"
+                  className="self-stretch text-black text-xl font-light font-['Inter'] "
                 >
                   <div className="flex-1 justify-start items-center gap-2">
                     <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
@@ -847,20 +860,19 @@ const RightAside = ({
                   </div>
                   <div className="h-8 w-4 items-center">
                     {member.leaveable && (
-                      <div
-                        className="h-1 w-4 bg-[#ACD266] rounded-full"
-                        onClick={() => {
-                          console.log("leave");
-                        }}
-                      ></div>
+                        <div className="items-center  h-8 cursor-pointer group" onClick={() => {
+                            console.log("leave");
+                            }}>
+                            <div className="h-1 w-4 bg-[#ACD266] rounded-full group-hover:bg-red-400"></div>
+                        </div>
+                      
                     )}
                     {member.kickable && (
-                      <div
-                        className="h-1 w-4 bg-[#ACD266] rounded-full"
-                        onClick={() => {
+                      <div className="items-center  h-8  cursor-pointer group" onClick={() => {
                           console.log("kick");
-                        }}
-                      ></div>
+                        }}>
+                            <div className="h-1 w-4 bg-[#ACD266] rounded-full group-hover:bg-red-400"></div>
+                        </div>
                     )}
                   </div>
                 </div>
@@ -897,8 +909,8 @@ const Message = ({
   content: string;
 }) => {
   return (
-    <div className="self-stretch p-4 inline-flex justify-start items-start gap-4 overflow-hidden">
-      <div className="w-16 h-16 bg-[#ACD266] rounded-[32px] flex justify-center items-center gap-2.5 overflow-hidden">
+    <div className="self-stretch p-4 gap-4">
+      <div className="w-16 h-16 bg-[#ACD266] rounded-[32px] flex justify-center items-center gap-2.5">
         <Icon name="avatar" className="w-16 h-16 text-[#6D66D2]" />
       </div>
       <div className="inline-flex flex-col justify-start items-start">
