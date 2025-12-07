@@ -744,7 +744,7 @@ useEffect(() => {
               }}
               checked={payload.createRoomIsPrivate}
               type="checkbox"
-              className="h-8 w-8 border-4 appearance-none border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent"
+              className="h-8 w-8 border-4 accent-[#6D66D2] border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent"
             />
             <label className="ml-4 justify-start text-black text-2xl font-normal font-['Inter']">
               Prywatny pokój
@@ -794,7 +794,7 @@ useEffect(() => {
           <div>
             <input
               type="checkbox"
-              className="h-8 w-8 border-4 appearance-none border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent"
+              className="h-8 w-8 border-4 accent-[#6D66D2] border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent"
             />
             <label className="ml-4 justify-start text-black text-2xl font-normal font-['Inter']">
               Prywatny pokój

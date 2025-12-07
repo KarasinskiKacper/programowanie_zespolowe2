@@ -28,7 +28,7 @@ const TextInput = ({
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}
           type={isPassword ? "password" : "text"}
-          className="self-stretch py-1 border-b-4 border-[#6D66D2] flex flex-col justify-start items-start gap-2.5 overflow-hidden text-2xl "
+          className="focus:outline-none focus:ring-0 self-stretch py-1 border-b-4 border-[#6D66D2] flex flex-col justify-start items-start gap-2.5 overflow-hidden text-2xl "
           disabled={disabled}
         />
       </div>
