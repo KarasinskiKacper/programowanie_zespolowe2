@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from db_objects import Rooms, db, Users_room, Users
+from db_objects import Rooms, db, Users_room, Users, Chat_history
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app_state import socketio, room_users as room_users_app_state, update_user_room_maps, remove_room
 
@@ -89,7 +89,7 @@ def join_private_room():
     db.session.add(user_room)
     db.session.commit()
     
-    socketio.emit("user_list_updated", to=str(room.room_id))
+    socketio.emit("user_list_updated", to=room.room_id)
 
     return jsonify({"message": "Joined room successfully"}), 200
 
@@ -166,10 +166,14 @@ def delete_room():
     if not room_id:
         return jsonify({"error": "Missing room_id parameter"}), 400
 
-    room = Rooms.query.filter(room_id==room_id, room_owner==room_owner).first()
+    room = Rooms.query.filter(Rooms.room_id==room_id, Rooms.room_owner==room_owner).first()
 
     if room is None:
         return jsonify({"error": "Room not found"}), 404
+    
+    Chat_history.query.filter_by(room_id=room_id).delete()
+    
+    Users_room.query.filter_by(room_id=room_id).delete()
 
     db.session.delete(room)
     db.session.commit()
@@ -203,13 +207,22 @@ def edit_room():
     
     if is_private:
         room.is_private = True
+        
+        if new_access_key is None or new_access_key.strip() == "":
+            return jsonify({"error": "Missing new_access_key parameter for private room"}), 400
+        
+        room.access_key = new_access_key
     else:
         room.is_private = False
+        room.access_key = None
     
-    room.name = new_name
+    if new_name is None or new_name.strip() == "":
+        return jsonify({"error": "Room name cannot be empty"}), 400
+    room.room_name = new_name
 
-    room.access_key = new_access_key
+    #print(f"Editing room {room.room_id}: new_name={room.room_name}, is_private={room.is_private}, new_access_key={room.access_key}")
 
     db.session.commit()
+    socketio.emit("room_list_updated")
 
     return jsonify({"message": "Room edited successfully"}), 200

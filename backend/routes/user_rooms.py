@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Users_room, db, Rooms
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app_state import socketio
 
 bp = Blueprint('user_rooms', __name__, url_prefix='/api')
 
@@ -13,7 +14,6 @@ def get_user_rooms():
     result = []
     
     for user_room, room in user_rooms:
-        print(room.room_name, room)
         result.append({
             "user_name": user_room.user_name,
             "room_id": user_room.room_id,
@@ -48,8 +48,7 @@ def kick_user():
     if not user_name or not room_id:
         return jsonify({"error": "Missing user_name or room_id parameter"}), 400
     
-    user_room_owner = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter_by(Rooms.room_owner == user_name)
-    
+    user_room_owner = db.session.query(Users_room, Rooms).join(Rooms, Users_room.room_id == Rooms.room_id).filter(Rooms.room_owner == Users_room.user_name)
     if user_room_owner is None:
         return jsonify({"error": "User not owner of room "}), 404
     
@@ -60,5 +59,6 @@ def kick_user():
     
     db.session.delete(user_room)
     db.session.commit()
+    socketio.emit("user_kicked", {"user_name": user_to_kick}, to=room_id)
     
     return jsonify({"message": "User kicked successfully"}), 200

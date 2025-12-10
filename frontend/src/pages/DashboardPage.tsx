@@ -20,6 +20,11 @@ import {
   joinPrivateRoom,
   getPublicRooms,
   getUserRooms,
+  getOnlineUsers,
+  kickUser,
+  leaveRoom,
+  updateRoom,
+  deleteRoom,
 } from "../auth/lib";
 import jwt from "jsonwebtoken";
 
@@ -73,6 +78,17 @@ export default function Page() {
   const [createRoomNameError, setCreateRoomNameError] = useState("");
   const [createRoomPasswordError, setCreateRoomPasswordError] = useState("");
   const [createRoomConfirmPasswordError, setCreateRoomConfirmPasswordError] = useState("");
+
+  const [updateRoomName, setUpdateRoomName] = useState("");
+  const [updateRoomPassword, setUpdateRoomPassword] = useState("");
+  const [updateRoomConfirmPassword, setUpdateRoomConfirmPassword] = useState("");
+  const [updateRoomIsPrivate, setUpdateRoomIsPrivate] = useState(false);
+
+  const [updateRoomNameError, setUpdateRoomNameError] = useState("");
+  const [updateRoomPasswordError, setUpdateRoomPasswordError] = useState("");
+  const [updateRoomConfirmPasswordError, setUpdateRoomConfirmPasswordError] = useState("");
+
+  const [activeUsers, setActiveUsers] = useState([]);
 
   const sendJoinRoomRequest = async () => {
     console.log("sendJoinRoomRequest1");
@@ -149,11 +165,65 @@ export default function Page() {
       }
       resultUserRooms.push(room);
     });
-    console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultRooms}`);
-    console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultUserRooms}`);
+    // console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultRooms}`);
+    // console.log(`[Dashboard/fetchRoomListData/resultRooms] ${resultUserRooms}`);
     setRooms(resultRooms);
 
     setUserRooms(resultUserRooms);
+  };
+
+  const sendUpdateRoomRequest = async () => {
+    let isProperData = true;
+    if (updateRoomName === "") {
+      setUpdateRoomNameError("Podaj nazwę pokoju");
+      isProperData = false;
+    } else {
+      setUpdateRoomNameError("");
+    }
+    if (updateRoomPassword === "" && updateRoomIsPrivate) {
+      setUpdateRoomPasswordError("Podaj klucz");
+      isProperData = false;
+    } else {
+      setUpdateRoomPasswordError("");
+    }
+    if (updateRoomConfirmPassword === "" && updateRoomIsPrivate) {
+      setUpdateRoomConfirmPasswordError("Potwierdź klucz");
+      isProperData = false;
+    } else {
+      setUpdateRoomConfirmPasswordError("");
+    }
+
+    if (!isProperData) {
+      return isProperData;
+    }
+
+    if (updateRoomPassword !== updateRoomConfirmPassword && updateRoomIsPrivate) {
+      setUpdateRoomConfirmPasswordError("Klucze nie zgadzają się");
+      isProperData = false;
+    } else {
+      setUpdateRoomConfirmPasswordError("");
+    }
+
+    if (!isProperData) {
+      return isProperData;
+    }
+
+    if (chosenRoom === null || chosenRoom === undefined) return false;
+    console.log(updateRoomIsPrivate);
+
+    const response = await updateRoom(
+      accessToken,
+      chosenRoom,
+      updateRoomPassword,
+      updateRoomName,
+      updateRoomIsPrivate
+    );
+
+    if (response?.message === "Room edited successfully") return true;
+    else {
+      setUpdateRoomPasswordError("Błędny klucz");
+      return false;
+    }
   };
 
   const sendCreateRoomRequest = async () => {
@@ -246,10 +316,7 @@ export default function Page() {
   };
 
   const fetchMembers = async () => {
-    console.log("fetchMembers", chosenRoom);
     if (chosenRoom !== null && chosenRoom !== undefined) {
-      console.log("if fetchMembers");
-
       const fetchedMembers = await getChatMembers(chosenRoom);
       let resultMembers: Object[] = [];
 
@@ -265,6 +332,7 @@ export default function Page() {
           //qqqqqqqqq
           kickable: username === chosenRoomData.room_owner && username !== fetchedMember.user_name,
           leaveable: username !== chosenRoomData.room_owner && username === fetchedMember.user_name,
+          isOwner: chosenRoomData.room_owner === fetchedMember.user_name,
         });
       });
 
@@ -275,6 +343,11 @@ export default function Page() {
   const fetchRoomData = async () => {
     await fetchMessages();
     await fetchMembers();
+    setTimeout(async () => {
+      const onlineUsers = await getOnlineUsers(accessToken);
+      console.log(onlineUsers);
+      setActiveUsers(onlineUsers);
+    }, 200);
   };
 
   const onConnect = () => {
@@ -294,7 +367,6 @@ export default function Page() {
       socket.emit("watchdog", {
         user_name: user_name,
       });
-      console.log("watchdog");
     }
   }
 
@@ -356,12 +428,13 @@ export default function Page() {
   // const onUserLeft = (data) => {
   //   console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
   // };
-  const onUserActivityChange = (data) => {
-    console.log(`[Dashboard/onUserOnline/chosenRoom]`, chosenRoom);
-    console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
-  };
-  const onUserListUpdate = () => {
-    console.log(`user list updated`);
+  const onUserActivityChange = async (data) => {
+    console.log(`${data.user_name} ActivityChange`);
+    setTimeout(async () => {
+      const onlineUsers = await getOnlineUsers(accessToken);
+      console.log(onlineUsers);
+      setActiveUsers(onlineUsers);
+    }, 200);
   };
 
   const onError = (data) => {
@@ -388,7 +461,17 @@ export default function Page() {
     isConnected ? 1000 : null
   );
 
-  useEffect(() => { 
+  const onUserKicked = (data) => {
+    console.log("onUserKicked", data);
+    if (data.user_name === jwt.decode(accessToken).sub) {
+      location.reload();
+    } else {
+      // console.log(rooms);
+      fetchRoomData();
+    }
+  };
+
+  useEffect(() => {
     setShownRooms(rooms);
   }, [rooms]);
 
@@ -423,6 +506,7 @@ export default function Page() {
 
     socket.on("user_list_updated", onUserListUpdated);
     socket.on("room_list_updated", onRoomListUpdated);
+    socket.on("user_kicked", onUserKicked);
 
     if (socket.connected) {
       onConnect();
@@ -441,7 +525,17 @@ export default function Page() {
       socket.off("error", onError);
       socket.off("user_list_updated", onUserListUpdated);
       socket.off("room_list_updated", onRoomListUpdated);
+      socket.off("user_kicked", onUserKicked);
     };
+  }, [chosenRoom]);
+
+  useEffect(() => {
+    if (
+      (chosenRoom === null || chosenRoom === undefined) &&
+      (messages.length > 0 || members.length > 0)
+    ) {
+      location.reload();
+    }
   }, [chosenRoom]);
 
   return (
@@ -467,6 +561,7 @@ export default function Page() {
           setNewMessage,
           sendMessage,
           chosenRoom,
+
           createRoomName,
           createRoomPassword,
           createRoomConfirmPassword,
@@ -482,6 +577,7 @@ export default function Page() {
           setCreateRoomNameError,
           setCreateRoomPasswordError,
           setCreateRoomConfirmPasswordError,
+
           setIsReFetchNeeded,
           joinRoomName,
           joinRoomPassword,
@@ -501,9 +597,30 @@ export default function Page() {
           setJoinPrivateRoomPassword,
           joinPrivateRoomPasswordError,
           setJoinPrivateRoomPasswordError,
+
+          updateRoomName,
+          updateRoomPassword,
+          updateRoomConfirmPassword,
+          updateRoomIsPrivate,
+          updateRoomNameError,
+          updateRoomPasswordError,
+          updateRoomConfirmPasswordError,
+
+          setUpdateRoomName,
+          setUpdateRoomPassword,
+          setUpdateRoomConfirmPassword,
+          setUpdateRoomIsPrivate,
+          setUpdateRoomNameError,
+          setUpdateRoomPasswordError,
+          setUpdateRoomConfirmPasswordError,
+          sendUpdateRoomRequest,
+
+          members,
+          username: jwt.decode(accessToken)?.sub,
+          accessToken,
         }}
       />
-      <RightAside aside={rightAside} payload={{ members }} />
+      <RightAside aside={rightAside} payload={{ members, activeUsers, accessToken, chosenRoom }} />
     </div>
   );
 }
@@ -593,9 +710,8 @@ const LeftAside = ({
           }}
         />
         <div className="">
-            <Icon name="loop" className="w-6 h-6 text-[#6D66D2] hover:text-[#ACD266]" />
+          <Icon name="loop" className="w-6 h-6 text-[#6D66D2] hover:text-[#ACD266]" />
         </div>
-        
       </div>
     </div>
   );
@@ -611,40 +727,41 @@ const Workspace = ({
 }) => {
   const messages = payload?.messages || [];
 
-const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-useEffect(() => {
-  const el = containerRef.current;
-  if (el) el.scrollTop = el.scrollHeight;
-}, [messages]);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   if (disable) return null;
   if (workspace === "ROOM_CHAT")
-    
     return (
       <div className="flex-1 flex flex-col min-h-0">
         <div className="self-stretch h-[calc(100vh-192px)] overflow-y-scroll" ref={containerRef}>
-            <div className="self-stretch flex-1 flex flex-col">
+          <div className="self-stretch flex-1 flex flex-col">
             {messages.map((message, index) => (
-                <Message
+              <Message
                 key={index}
                 author={message.author}
                 content={message.content}
                 date={message.date}
                 time={message.time}
-                />
+              />
             ))}
-            </div>
+          </div>
         </div>
         <div className="self-stretch">
           <div className="pl-6 pr-2 pt-6 pb-6">
-            <Icon
-              name="edit"
-              className="w-12 h-12 text-[#6D66D2] "
-              onClick={() => {
-                payload.setWorkspace("ROOM_SETTINGS");
-              }}
-            />
+            {payload.members.find((member) => member.isOwner)?.username === payload.username && (
+              <Icon
+                name="edit"
+                className="w-12 h-12 text-[#6D66D2] "
+                onClick={() => {
+                  payload.setWorkspace("ROOM_SETTINGS");
+                }}
+              />
+            )}
           </div>
           <div className="self-stretch flex-1 p-4 flex flex-col justify-start items-start overflow-hidden">
             <div className="self-stretch outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
@@ -687,6 +804,7 @@ useEffect(() => {
             value={payload.joinRoomPassword}
             setValue={payload.setJoinRoomPassword}
             error={payload.joinRoomPasswordError}
+            isPassword
           />
           <Button
             label="Wejdź"
@@ -724,6 +842,7 @@ useEffect(() => {
             setValue={payload.setCreateRoomPassword}
             disabled={!payload.createRoomIsPrivate}
             error={payload.createRoomPasswordError}
+            isPassword
           />
           <TextInput
             label="Powtórz klucz (dla pokoju prywatnego)"
@@ -732,6 +851,7 @@ useEffect(() => {
             setValue={payload.setCreateRoomConfirmPassword}
             disabled={!payload.createRoomIsPrivate}
             error={payload.createRoomConfirmPasswordError}
+            isPassword
           />
           <div>
             <input
@@ -781,20 +901,40 @@ useEffect(() => {
           <TextInput
             label="Nazwa pokoju"
             placeholder="Wpisz nazwę pokoju"
-            value={""}
-            setValue={() => {}}
+            value={payload.updateRoomName}
+            setValue={payload.setUpdateRoomName}
+            error={payload.updateRoomNameError}
           />
-          <TextInput label="Hasło" placeholder="Wpisz hasło" value={""} setValue={() => {}} />
+          <TextInput
+            label="Hasło"
+            placeholder="Wpisz hasło"
+            value={payload.updateRoomPassword}
+            setValue={payload.setUpdateRoomPassword}
+            disabled={!payload.updateRoomIsPrivate}
+            error={payload.updateRoomPasswordError}
+            isPassword
+          />
           <TextInput
             label="Powtórz hasło"
             placeholder="Powtórz hasło"
-            value={""}
-            setValue={() => {}}
+            value={payload.updateRoomConfirmPassword}
+            setValue={payload.setUpdateRoomConfirmPassword}
+            disabled={!payload.updateRoomIsPrivate}
+            error={payload.updateRoomConfirmPasswordError}
+            isPassword
           />
           <div>
             <input
               type="checkbox"
               className="h-8 w-8 border-4 accent-[#6D66D2] border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent"
+              onChange={() => {
+                if (payload.updateRoomIsPrivate) {
+                  payload.setUpdateRoomPassword("");
+                  payload.setUpdateRoomConfirmPassword("");
+                }
+                payload.setUpdateRoomIsPrivate(!payload.updateRoomIsPrivate);
+              }}
+              checked={payload.updateRoomIsPrivate}
             />
             <label className="ml-4 justify-start text-black text-2xl font-normal font-['Inter']">
               Prywatny pokój
@@ -803,8 +943,10 @@ useEffect(() => {
 
           <Button
             label="Edytuj"
-            onClick={() => {
-              payload.setWorkspace("ROOM_CHAT");
+            onClick={async () => {
+              if (await payload.sendUpdateRoomRequest()) {
+                location.reload();
+              }
             }}
             color="secondary"
           />
@@ -817,8 +959,13 @@ useEffect(() => {
           />
           <Button
             label="Usuń pokój"
-            onClick={() => {
-              payload.setWorkspace("ROOM_CHAT");
+            onClick={async () => {
+              const res = await deleteRoom(payload.accessToken, payload.chosenRoom);
+              console.log(res);
+
+              if (res.status === 200) {
+                location.reload();
+              }
             }}
             type="outline"
             className="outline-[#F35454]"
@@ -855,24 +1002,42 @@ const RightAside = ({
                   className="self-stretch text-black text-xl font-light font-['Inter'] "
                 >
                   <div className="flex-1 justify-start items-center gap-2">
-                    <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
+                    {jwt.decode(payload.accessToken).sub === member.username ||
+                    (payload?.activeUsers &&
+                      payload?.activeUsers?.find(
+                        (activeUser) => activeUser === member.username
+                      )) ? (
+                      <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
+                    ) : (
+                      <div className="h-4 w-4 bg-[#ff0000] rounded-full"></div>
+                    )}
+
                     {member.username}
                   </div>
                   <div className="h-8 w-4 items-center">
                     {member.leaveable && (
-                        <div className="items-center  h-8 cursor-pointer group" onClick={() => {
-                            console.log("leave");
-                            }}>
-                            <div className="h-1 w-4 bg-[#ACD266] rounded-full group-hover:bg-red-400"></div>
-                        </div>
-                      
+                      <div
+                        className="h-1 w-4 bg-[#ACD266] rounded-full"
+                        onClick={async () => {
+                          await leaveRoom(payload.chosenRoom, payload.accessToken);
+                          location.reload();
+                        }}
+                      ></div>
                     )}
                     {member.kickable && (
-                      <div className="items-center  h-8  cursor-pointer group" onClick={() => {
-                          console.log("kick");
-                        }}>
-                            <div className="h-1 w-4 bg-[#ACD266] rounded-full group-hover:bg-red-400"></div>
-                        </div>
+                      <div
+                        className="h-1 w-4 bg-[#ACD266] rounded-full"
+                        onClick={async () => {
+                          // console.log(
+                          //   "kickUser",
+                          //   payload.chosenRoom,
+                          //   payload.accessToken,
+                          //   member.username
+                          // );
+
+                          await kickUser(payload.chosenRoom, payload.accessToken, member.username);
+                        }}
+                      ></div>
                     )}
                   </div>
                 </div>

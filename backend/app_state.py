@@ -20,4 +20,4 @@ def update_user_room_maps(room_id: int, user_name: str , remove: bool = False):
 def remove_room(room_id: int):
     users = room_users.pop(room_id, set())
     for user in users:
-        user_rooms[user, set()].discard(room_id)
+        user_rooms[user].discard(room_id)
