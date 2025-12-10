@@ -8,6 +8,13 @@ import { useRouter } from "next/navigation";
 import { registerUser } from "../auth/lib";
 import { createCookie } from "../app/actions";
 
+/**
+ * Registers a user with the given login and password.
+ * If the user is not logged in, creates a cookie with the given login and password.
+ * @param {string} login The login of the user to register.
+ * @param {string} password The password of the user to register.
+ * @returns {Promise<boolean>} A promise that resolves to true if the user creation request was successful, false otherwise.
+ */
 const register = async (login: string, password: string) => {
   const response = await registerUser(login, password);
   if (response.status === 201) {

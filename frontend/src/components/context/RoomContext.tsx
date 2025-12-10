@@ -9,7 +9,7 @@ interface Room {
 
 interface RoomsContextType {
   rooms: Room[];
-  setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
+  setRooms: React.Dispatch<React.SetStateAction<any[]>>;
   chosenRoom: number | null;
   setChosenRoom: React.Dispatch<React.SetStateAction<number | null>>;
   userRooms: Object[];
@@ -33,13 +33,6 @@ export const RoomsProvider = ({ children }: { children: ReactNode }) => {
   const [chosenRoom, setChosenRoom] = useState<number | null>(null);
   const [userRooms, setUserRooms] = useState<Object[]>([]);
   const [isReFetchNeeded, setIsReFetchNeeded] = useState<boolean>(false);
-
-  
-  console.log("🔄 RoomsProvider render, chosenRoom:", chosenRoom);
-
-  useEffect(() => {
-    console.log("🎯 chosenRoom changed:", chosenRoom);
-  }, [chosenRoom]);
 
   return (
     <RoomsContext.Provider

@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from db_objects import Rooms, db, Users_room, Users
+from db_objects import Rooms, db, Users_room, Users, Chat_history
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app_state import socketio, room_users as room_users_app_state, update_user_room_maps, remove_room
 
@@ -7,6 +7,11 @@ bp = Blueprint('rooms', __name__, url_prefix='/api')
 
 @bp.route('/rooms', methods=['GET'])
 def get_rooms():
+    """!
+    Get a list of all public rooms.
+
+    @return A list of public rooms, each containing the room_id, room_name, room_owner, create_date, is_private, and access_key.
+    """
     query = Rooms.query.filter_by(is_private=False)
     
     rooms = query.all()
@@ -15,6 +20,16 @@ def get_rooms():
 
 @bp.route('/room', methods=['GET'])
 def get_room():
+    """!
+    Get a room by its id.
+
+    @param room_id The id of the room to get.
+
+    @return A dictionary containing the room_id, room_name, room_owner, create_date, is_private, and access_key of the room.
+
+    @exception 400 If the room_id parameter is missing.
+    @exception 404 If the room is not found.
+    """
     query = Rooms.query
 
     if request.args.get("room_id"):
@@ -33,15 +48,25 @@ def get_room():
 @bp.route('/room/join_public', methods=['POST'])
 @jwt_required()
 def join_public_room():
+    """!
+    Join a public room by its id.
+
+    @param room_id The id of the public room to join.
+
+    @return A dictionary containing the message of the join action.
+
+    @exception 400 If the room_id parameter is missing.
+    @exception 404 If the room is not found.
+    """
+    
     user_name = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
-    access_key = data.get("access_key")
     
     if not room_id:
         return jsonify({"error": "Missing room_id parameter"}), 400
     
-    user_room = Users_room.query.filter_by(user_name=user_name, room_id=room_id).first()
+    user_room = Users_room.query.filter(Users_room.user_name==user_name, Users_room.room_id==room_id).first()
     if user_room is not None:
         return jsonify({"error": "User already in room"}), 400
     
@@ -63,6 +88,16 @@ def join_public_room():
 @bp.route('/room/join_private', methods=['POST'])
 @jwt_required()
 def join_private_room():
+    """!
+    Join a private room by its access key.
+
+    @param access_key The access key of the private room to join.
+
+    @return A dictionary containing the message of the join action.
+
+    @exception 400 If the access_key parameter is missing.
+    @exception 404 If the room is not found or the user is not found.
+    """
     user_name = get_jwt_identity()
     data = request.json
     access_key = data.get("access_key")
@@ -80,7 +115,7 @@ def join_private_room():
     if user is None:
         return jsonify({"error": "User not found"}), 404
 
-    existing_user_room = Users_room.query.filter_by(user_name=user_name, room_id=room.room_id).first()
+    existing_user_room = Users_room.query.filter(Users_room.user_name==user_name, Users_room.room_id==room.room_id).first()
 
     if existing_user_room is not None:
         return jsonify({"error": "User already in room"}), 400
@@ -89,13 +124,23 @@ def join_private_room():
     db.session.add(user_room)
     db.session.commit()
     
-    socketio.emit("user_list_updated", to=str(room.room_id))
+    socketio.emit("user_list_updated", to=room.room_id)
 
     return jsonify({"message": "Joined room successfully"}), 200
 
 @bp.route('/room/leave', methods=['POST'])
 @jwt_required()
 def leave_room():
+    """!
+    Leave a room by its id.
+
+    @param room_id The id of the room to leave.
+
+    @return A dictionary containing the message of the leave action.
+
+    @exception 400 If the room_id or user_name parameter is missing.
+    @exception 404 If the room is not found or the user is not in the room.
+    """
     user_name = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
@@ -108,7 +153,7 @@ def leave_room():
     if room is None:
         return jsonify({"error": "Room not found"}), 404
 
-    user_room = Users_room.query.filter_by(user_name=user_name, room_id=room_id).first()
+    user_room = Users_room.query.filter(Users_room.user_name==user_name, Users_room.room_id==room_id).first()
 
     if user_room is None:
         return jsonify({"error": "User not in room"}), 404
@@ -128,6 +173,19 @@ def leave_room():
 @bp.route('/room/create', methods=['POST'])
 @jwt_required()
 def create_room():
+    """!
+    Create a room.
+
+    @param room_name The name of the room to create.
+    @param is_private Whether the room is private or not.
+    @param access_key The access key for the room.
+
+    @return A dictionary containing the message of the create action.
+
+    @exception 400 If the room_name, room_owner, or access_key parameter is missing.
+    @exception 400 If a room with the given access key already exists.
+    """
+    
     room_owner = get_jwt_identity()
     data = request.json
     room_name = data.get("room_name")
@@ -139,6 +197,12 @@ def create_room():
     
     if is_private and not access_key:
         return jsonify({"error": "Missing access_key parameter"}), 400
+    
+    if access_key is not None:
+        existing_room = Rooms.query.filter_by(access_key=access_key).first()
+    
+        if existing_room is not None:
+            return jsonify({"error": "Room with this access key already exists"}), 400
 
     new_room = Rooms(room_name=room_name, room_owner=room_owner, is_private=is_private, access_key=access_key, create_date=db.func.now())
     db.session.add(new_room)
@@ -153,6 +217,16 @@ def create_room():
 @bp.route('/room/delete', methods=['POST'])
 @jwt_required()
 def delete_room():
+    """!
+    Delete a room by its id.
+
+    @param room_id The id of the room to delete.
+
+    @return A dictionary containing the message of the delete action.
+
+    @exception 400 If the room_id parameter is missing.
+    @exception 404 If the room is not found or the user is not the room owner.
+    """
     room_owner = get_jwt_identity()
     data = request.json
     room_id = data.get("room_id")
@@ -160,10 +234,14 @@ def delete_room():
     if not room_id:
         return jsonify({"error": "Missing room_id parameter"}), 400
 
-    room = Rooms.query.filter(room_id==room_id, room_owner==room_owner).first()
+    room = Rooms.query.filter(Rooms.room_id==room_id, Rooms.room_owner==room_owner).first()
 
     if room is None:
         return jsonify({"error": "Room not found"}), 404
+    
+    Chat_history.query.filter_by(room_id=room_id).delete()
+    
+    Users_room.query.filter_by(room_id=room_id).delete()
 
     db.session.delete(room)
     db.session.commit()
@@ -173,3 +251,58 @@ def delete_room():
     socketio.emit("room_list_updated")
 
     return jsonify({"message": "Room deleted successfully"}), 200
+
+@bp.route('/room/edit', methods=['POST'])
+@jwt_required()
+def edit_room():
+    """!
+    Edit a room by its id.
+
+    @param room_id The id of the room to edit.
+    @param new_access_key The new access key for the room.
+    @param is_private Whether the room is private or not.
+    @param new_name The new name for the room.
+
+    @return A dictionary containing the message of the edit action.
+
+    @exception 400 If the room_id parameter is missing.
+    @exception 404 If the room is not found.
+    @exception 403 If the user is not the room owner.
+    """
+    data = request.json
+    room_owner = get_jwt_identity()
+    room_id = data.get("room_id")
+    new_access_key = data.get("new_access_key")
+    is_private = data.get("is_private")
+    new_name = data.get("new_name")
+
+    if not room_id:
+        return jsonify({"error": "Missing room_id parameter"}), 400
+
+    room = Rooms.query.filter_by(room_id=room_id).first()
+
+    if room is None:
+        return jsonify({"error": "Room not found"}), 404
+    
+    if room.room_owner != room_owner:
+        return jsonify({"error": "You are not the owner of this room"}), 403
+    
+    if is_private:
+        room.is_private = True
+        
+        if new_access_key is None or new_access_key.strip() == "":
+            return jsonify({"error": "Missing new_access_key parameter for private room"}), 400
+        
+        room.access_key = new_access_key
+    else:
+        room.is_private = False
+        room.access_key = None
+    
+    if new_name is None or new_name.strip() == "":
+        return jsonify({"error": "Room name cannot be empty"}), 400
+    room.room_name = new_name
+
+    db.session.commit()
+    socketio.emit("room_list_updated")
+
+    return jsonify({"message": "Room edited successfully"}), 200

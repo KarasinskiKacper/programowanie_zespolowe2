@@ -5,40 +5,30 @@ from user_activity import get_online_users as get_online_users_from_app_state
 
 bp = Blueprint('users', __name__, url_prefix='/api')
 
-@bp.route('/users', methods=['GET'])
-def get_users():
-    users = Users.query.all()
-    return jsonify([user.to_dict() for user in users])
-
 @bp.route("users/online", methods=['GET'])
+@jwt_required()
 def get_online_users():
-    if request.args.get("user_name"):
-        user_name = request.args.get("user_name")
-        online_users = get_online_users_from_app_state(user_name)
-    else:
-        return jsonify({"error": "Missing user_name parameter"}), 400
+    """!
+    Get a list of online users for the current user.
+
+    @return A list of online users, each containing the user_name.
+    """
+    user_name = get_jwt_identity()
+    online_users = get_online_users_from_app_state(user_name)
 
     return jsonify(list(online_users))
-
-@bp.route('/user', methods=['GET'])
-def get_user():
-    query = Users.query
-    if request.args.get("user_name"):
-        user_name = request.args.get("user_name")
-        query = query.filter_by(user_name=user_name)
-    else:
-        return jsonify({"error": "Missing user_name parameter"}), 400
-    
-    user = query.first()
-
-    if user is None:
-        return jsonify({"error": "User not found"}), 404
-    
-    return jsonify(user.to_dict())
 
 @bp.route('/user/change_password', methods=['POST'])
 @jwt_required()
 def change_password():
+    """!
+    Change the password of the current user.
+    
+    @param old_password (str): The current password of the user.
+    @param new_password (str): The new password to set for the user.
+
+    @return A dictionary containing the message of the password change action.
+    """
     user_name = get_jwt_identity()
     data = request.json
     old_password = data.get("old_password")
@@ -62,9 +52,13 @@ def change_password():
 
 @bp.route('/user/get_info', methods=['GET'])
 @jwt_required()
-def get_user_info():
-    #user_name = request.args.get("user_name")
-    
+def get_user_info():    
+    """!
+    Get information about the current user.
+
+    @return A dictionary containing the count of messages sent by the user,
+            the count of private and public rooms owned by the user, and the count of private and public rooms that the user is a member of.
+    """
     user_name = get_jwt_identity()
         
     message_count = Chat_history.query.filter_by(user_name=user_name).count()

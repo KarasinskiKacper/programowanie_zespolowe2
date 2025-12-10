@@ -18,12 +18,12 @@ const Button = ({
 	const c = {primary: "#6D66D2", secondary: "#ACD266", red: "#F35454"}[color];
 	const style = {
 		button: {
-			base: `self-stretch py-4 bg-[${c}] inline-flex justify-center items-center gap-2.5 overflow-hidden`,
-			outline: `self-stretch py-4 outline outline-4 outline-offset-[-4px] outline-[${c}] inline-flex justify-center items-center gap-2.5 overflow-hidden`
+			base: `self-stretch py-4 bg-[${c}] inline-flex justify-center items-center gap-2.5 overflow-hidden `,
+			outline: `self-stretch py-4 outline outline-4 outline-offset-[-4px] outline-[${c}] inline-flex justify-center items-center gap-2.5 overflow-hidden hover:outline-none`
 		},
 		text: {
-			base: "justify-start text-white text-3xl font-normal font-['Inter']",
-			outline: "justify-start text-black font-normal font-['Inter']"
+			base: "text-white text-3xl font-normal font-['Inter']",
+			outline: "text-black font-normal font-['Inter'] hover:text-white"
 		}
 	}
 
@@ -31,8 +31,8 @@ const Button = ({
 	style.text.base += size === "small" ? " text-xl" : size === "large" ? " text-4xl" : " text-3xl";
 
     return (
-       <div className={style.button[type] + " " + className} onClick={onClick}>
-			<div className={style.text[type] + " " + classNameT}>{label}</div>
+       <div className={style.button[type] + ` cursor-pointer hover:bg-[#ACD266]  ` + className + style.text[type] } onClick={onClick}>
+			{label}
 		</div>
     );
 };

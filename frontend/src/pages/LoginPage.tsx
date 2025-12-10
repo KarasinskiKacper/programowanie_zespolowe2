@@ -8,6 +8,14 @@ import { useRouter } from "next/navigation";
 import { loginUser } from "../auth/lib";
 import { createCookie } from "../app/actions";
 
+/**
+ * Logs a user in using their login and password.
+ * If the login request was successful, creates a cookie with the access token and returns true.
+ * If the login request was not successful, returns false.
+ * @param {string} login The login of the user to log in.
+ * @param {string} password The password of the user to log in.
+ * @returns {Promise<boolean>} A promise that resolves to true if the login request was successful, false otherwise.
+ */
 const login = async (login: string, password: string) => {
   const response = await loginUser(login, password);
   if (response.status === 200) {

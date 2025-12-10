@@ -36,11 +36,11 @@ export default function Page() {
 
   return (
     <div className="self-stretch p-16 inline-flex flex-col justify-start items-start gap-32 overflow-hidden">
-      <div className="self-stretch inline-flex justify-start items-start gap-8 overflow-hidden">
+      <div className="self-stretch inline-flex justify-start items-center gap-8 overflow-hidden">
         <Icon name="avatar" className="w-24 h-24 text-white" />
-        <div className="inline-flex flex-col justify-start items-start">
-          <div className="inline-flex justify-start items-end gap-4">
-            <div className="justify-start text-indigo-500 text-6xl font-bold font-['Inter']">
+        <div className="inline-flex flex-col justify-center items-center">
+          <div className="inline-flex justify-center items-center gap-4">
+            <div className="items-center text-indigo-500 text-6xl font-bold font-['Inter']">
               {username}
             </div>
           </div>
