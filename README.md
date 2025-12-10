@@ -12,7 +12,7 @@ Aplikacja "Komunikator" działająca w sieci lokalnej prowadzi wymiane wiadomoś
 ## Instalacja
 Przed instalacją należy utworzyć w `frontend/` i `backend/` pliki `.env` według szablonów.
 ```bash
-git clone <repository-url>
+git clone https://github.com/KarasinskiKacper/programowanie_zespolowe2.git
 cd programowanie_zespolowe2
 pip install -r requirements.txt
 
