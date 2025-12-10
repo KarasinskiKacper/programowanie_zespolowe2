@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_objects import Users_room, db, Rooms
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app_state import socketio
 
 bp = Blueprint('user_rooms', __name__, url_prefix='/api')
 
@@ -58,5 +59,6 @@ def kick_user():
     
     db.session.delete(user_room)
     db.session.commit()
+    socketio.emit("user_kicked", {"user_name": user_to_kick}, to=room_id)
     
     return jsonify({"message": "User kicked successfully"}), 200

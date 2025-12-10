@@ -10,6 +10,9 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  env: {
+    BASE_BACKEND_API_URL: process.env.BASE_BACKEND_API_URL,
+  },
 };
 
 export default nextConfig;

@@ -23,6 +23,8 @@ import {
   getOnlineUsers,
   kickUser,
   leaveRoom,
+  updateRoom,
+  deleteRoom,
 } from "../auth/lib";
 import jwt from "jsonwebtoken";
 
@@ -76,6 +78,15 @@ export default function Page() {
   const [createRoomNameError, setCreateRoomNameError] = useState("");
   const [createRoomPasswordError, setCreateRoomPasswordError] = useState("");
   const [createRoomConfirmPasswordError, setCreateRoomConfirmPasswordError] = useState("");
+
+  const [updateRoomName, setUpdateRoomName] = useState("");
+  const [updateRoomPassword, setUpdateRoomPassword] = useState("");
+  const [updateRoomConfirmPassword, setUpdateRoomConfirmPassword] = useState("");
+  const [updateRoomIsPrivate, setUpdateRoomIsPrivate] = useState(false);
+
+  const [updateRoomNameError, setUpdateRoomNameError] = useState("");
+  const [updateRoomPasswordError, setUpdateRoomPasswordError] = useState("");
+  const [updateRoomConfirmPasswordError, setUpdateRoomConfirmPasswordError] = useState("");
 
   const [activeUsers, setActiveUsers] = useState([]);
 
@@ -159,6 +170,60 @@ export default function Page() {
     setRooms(resultRooms);
 
     setUserRooms(resultUserRooms);
+  };
+
+  const sendUpdateRoomRequest = async () => {
+    let isProperData = true;
+    if (updateRoomName === "") {
+      setUpdateRoomNameError("Podaj nazwę pokoju");
+      isProperData = false;
+    } else {
+      setUpdateRoomNameError("");
+    }
+    if (updateRoomPassword === "" && updateRoomIsPrivate) {
+      setUpdateRoomPasswordError("Podaj klucz");
+      isProperData = false;
+    } else {
+      setUpdateRoomPasswordError("");
+    }
+    if (updateRoomConfirmPassword === "" && updateRoomIsPrivate) {
+      setUpdateRoomConfirmPasswordError("Potwierdź klucz");
+      isProperData = false;
+    } else {
+      setUpdateRoomConfirmPasswordError("");
+    }
+
+    if (!isProperData) {
+      return isProperData;
+    }
+
+    if (updateRoomPassword !== updateRoomConfirmPassword && updateRoomIsPrivate) {
+      setUpdateRoomConfirmPasswordError("Klucze nie zgadzają się");
+      isProperData = false;
+    } else {
+      setUpdateRoomConfirmPasswordError("");
+    }
+
+    if (!isProperData) {
+      return isProperData;
+    }
+
+    if (chosenRoom === null || chosenRoom === undefined) return false;
+    console.log(updateRoomIsPrivate);
+
+    const response = await updateRoom(
+      accessToken,
+      chosenRoom,
+      updateRoomPassword,
+      updateRoomName,
+      updateRoomIsPrivate
+    );
+
+    if (response?.message === "Room edited successfully") return true;
+    else {
+      setUpdateRoomPasswordError("Błędny klucz");
+      return false;
+    }
   };
 
   const sendCreateRoomRequest = async () => {
@@ -267,6 +332,7 @@ export default function Page() {
           //qqqqqqqqq
           kickable: username === chosenRoomData.room_owner && username !== fetchedMember.user_name,
           leaveable: username !== chosenRoomData.room_owner && username === fetchedMember.user_name,
+          isOwner: chosenRoomData.room_owner === fetchedMember.user_name,
         });
       });
 
@@ -277,6 +343,11 @@ export default function Page() {
   const fetchRoomData = async () => {
     await fetchMessages();
     await fetchMembers();
+    setTimeout(async () => {
+      const onlineUsers = await getOnlineUsers(accessToken);
+      console.log(onlineUsers);
+      setActiveUsers(onlineUsers);
+    }, 200);
   };
 
   const onConnect = () => {
@@ -390,6 +461,16 @@ export default function Page() {
     isConnected ? 1000 : null
   );
 
+  const onUserKicked = (data) => {
+    console.log("onUserKicked", data);
+    if (data.user_name === jwt.decode(accessToken).sub) {
+      location.reload();
+    } else {
+      // console.log(rooms);
+      fetchRoomData();
+    }
+  };
+
   useEffect(() => {
     setShownRooms(rooms);
   }, [rooms]);
@@ -425,6 +506,7 @@ export default function Page() {
 
     socket.on("user_list_updated", onUserListUpdated);
     socket.on("room_list_updated", onRoomListUpdated);
+    socket.on("user_kicked", onUserKicked);
 
     if (socket.connected) {
       onConnect();
@@ -443,7 +525,17 @@ export default function Page() {
       socket.off("error", onError);
       socket.off("user_list_updated", onUserListUpdated);
       socket.off("room_list_updated", onRoomListUpdated);
+      socket.off("user_kicked", onUserKicked);
     };
+  }, [chosenRoom]);
+
+  useEffect(() => {
+    if (
+      (chosenRoom === null || chosenRoom === undefined) &&
+      (messages.length > 0 || members.length > 0)
+    ) {
+      location.reload();
+    }
   }, [chosenRoom]);
 
   return (
@@ -469,6 +561,7 @@ export default function Page() {
           setNewMessage,
           sendMessage,
           chosenRoom,
+
           createRoomName,
           createRoomPassword,
           createRoomConfirmPassword,
@@ -484,6 +577,7 @@ export default function Page() {
           setCreateRoomNameError,
           setCreateRoomPasswordError,
           setCreateRoomConfirmPasswordError,
+
           setIsReFetchNeeded,
           joinRoomName,
           joinRoomPassword,
@@ -503,6 +597,27 @@ export default function Page() {
           setJoinPrivateRoomPassword,
           joinPrivateRoomPasswordError,
           setJoinPrivateRoomPasswordError,
+
+          updateRoomName,
+          updateRoomPassword,
+          updateRoomConfirmPassword,
+          updateRoomIsPrivate,
+          updateRoomNameError,
+          updateRoomPasswordError,
+          updateRoomConfirmPasswordError,
+
+          setUpdateRoomName,
+          setUpdateRoomPassword,
+          setUpdateRoomConfirmPassword,
+          setUpdateRoomIsPrivate,
+          setUpdateRoomNameError,
+          setUpdateRoomPasswordError,
+          setUpdateRoomConfirmPasswordError,
+          sendUpdateRoomRequest,
+
+          members,
+          username: jwt.decode(accessToken)?.sub,
+          accessToken,
         }}
       />
       <RightAside aside={rightAside} payload={{ members, activeUsers, accessToken, chosenRoom }} />
@@ -627,13 +742,15 @@ const Workspace = ({
         </div>
         <div className="self-stretch">
           <div className="pl-6 pr-2 pt-6 pb-6">
-            <Icon
-              name="edit"
-              className="w-12 h-12 text-[#6D66D2] "
-              onClick={() => {
-                payload.setWorkspace("ROOM_SETTINGS");
-              }}
-            />
+            {payload.members.find((member) => member.isOwner)?.username === payload.username && (
+              <Icon
+                name="edit"
+                className="w-12 h-12 text-[#6D66D2] "
+                onClick={() => {
+                  payload.setWorkspace("ROOM_SETTINGS");
+                }}
+              />
+            )}
           </div>
           <div className="self-stretch flex-1 p-4 flex flex-col justify-start items-start overflow-hidden">
             <div className="self-stretch outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
@@ -773,20 +890,40 @@ const Workspace = ({
           <TextInput
             label="Nazwa pokoju"
             placeholder="Wpisz nazwę pokoju"
-            value={""}
-            setValue={() => {}}
+            value={payload.updateRoomName}
+            setValue={payload.setUpdateRoomName}
+            error={payload.updateRoomNameError}
           />
-          <TextInput label="Hasło" placeholder="Wpisz hasło" value={""} setValue={() => {}} />
+          <TextInput
+            label="Hasło"
+            placeholder="Wpisz hasło"
+            value={payload.updateRoomPassword}
+            setValue={payload.setUpdateRoomPassword}
+            disabled={!payload.updateRoomIsPrivate}
+            error={payload.updateRoomPasswordError}
+            isPassword
+          />
           <TextInput
             label="Powtórz hasło"
             placeholder="Powtórz hasło"
-            value={""}
-            setValue={() => {}}
+            value={payload.updateRoomConfirmPassword}
+            setValue={payload.setUpdateRoomConfirmPassword}
+            disabled={!payload.updateRoomIsPrivate}
+            error={payload.updateRoomConfirmPasswordError}
+            isPassword
           />
           <div>
             <input
               type="checkbox"
               className="h-8 w-8 border-4 appearance-none border-[#6D66D2] checked:bg-[#6D66D2] checked:border-transparent"
+              onChange={() => {
+                if (payload.updateRoomIsPrivate) {
+                  payload.setUpdateRoomPassword("");
+                  payload.setUpdateRoomConfirmPassword("");
+                }
+                payload.setUpdateRoomIsPrivate(!payload.updateRoomIsPrivate);
+              }}
+              checked={payload.updateRoomIsPrivate}
             />
             <label className="ml-4 justify-start text-black text-2xl font-normal font-['Inter']">
               Prywatny pokój
@@ -795,8 +932,10 @@ const Workspace = ({
 
           <Button
             label="Edytuj"
-            onClick={() => {
-              payload.setWorkspace("ROOM_CHAT");
+            onClick={async () => {
+              if (await payload.sendUpdateRoomRequest()) {
+                location.reload();
+              }
             }}
             color="secondary"
           />
@@ -809,8 +948,13 @@ const Workspace = ({
           />
           <Button
             label="Usuń pokój"
-            onClick={() => {
-              payload.setWorkspace("ROOM_CHAT");
+            onClick={async () => {
+              const res = await deleteRoom(payload.accessToken, payload.chosenRoom);
+              console.log(res);
+
+              if (res.status === 200) {
+                location.reload();
+              }
             }}
             type="outline"
             className="outline-[#F35454]"
@@ -848,7 +992,10 @@ const RightAside = ({
                 >
                   <div className="flex-1 justify-start items-center gap-2">
                     {jwt.decode(payload.accessToken).sub === member.username ||
-                    payload?.activeUsers?.find((activeUser) => activeUser === member.username) ? (
+                    (payload?.activeUsers &&
+                      payload?.activeUsers?.find(
+                        (activeUser) => activeUser === member.username
+                      )) ? (
                       <div className="h-4 w-4 bg-[#1bb33c] rounded-full"></div>
                     ) : (
                       <div className="h-4 w-4 bg-[#ff0000] rounded-full"></div>
@@ -870,12 +1017,12 @@ const RightAside = ({
                       <div
                         className="h-1 w-4 bg-[#ACD266] rounded-full"
                         onClick={async () => {
-                          console.log(
-                            "kickUser",
-                            payload.chosenRoom,
-                            payload.accessToken,
-                            member.username
-                          );
+                          // console.log(
+                          //   "kickUser",
+                          //   payload.chosenRoom,
+                          //   payload.accessToken,
+                          //   member.username
+                          // );
 
                           await kickUser(payload.chosenRoom, payload.accessToken, member.username);
                         }}

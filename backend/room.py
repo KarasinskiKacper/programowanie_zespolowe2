@@ -92,5 +92,4 @@ def handle_watchdog(data):
         emit('error', {'message': 'Missing user_name',
                        'code': 3})
         return
-    print('watchdog', user_name)
     update_user_last_seen(user_name)

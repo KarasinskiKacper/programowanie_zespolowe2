@@ -88,7 +88,7 @@ export default function RootLayout({
     } else {
       setTopIcon("");
     }
-  }, [chosenRoom]);
+  }, [chosenRoom, rooms]);
 
   return (
     <div className="flex-1 min-h-screen bg-white inline-flex justify-start items-start overflow-hidden">
