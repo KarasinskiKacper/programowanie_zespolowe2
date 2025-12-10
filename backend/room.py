@@ -16,7 +16,6 @@ def handle_join(data):
     """
     room_id = data['room_id']
     user_name = data['user_name']
-    print('join', room_id, user_name)
     
     if not user_name or not room_id:
         emit('error', {'message': 'Missing user_name or room_id',
@@ -51,7 +50,6 @@ def handle_leave(data):
     """
     room_id = data['room_id']
     user_name = data['user_name']
-    print('leave', room_id, user_name)
     
     if not user_name or not room_id:
         emit('error', {'message': 'Missing user_name or room_id',
