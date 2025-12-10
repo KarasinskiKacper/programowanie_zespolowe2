@@ -40,7 +40,6 @@ def create_app():
     CORS(app) # Enable CORS for next.js
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     jwt = JWTManager(app)
-    # TODO add dotenv detection and verification, throw error if not found or invalid
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqldb://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     

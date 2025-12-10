@@ -302,8 +302,6 @@ def edit_room():
         return jsonify({"error": "Room name cannot be empty"}), 400
     room.room_name = new_name
 
-    #print(f"Editing room {room.room_id}: new_name={room.room_name}, is_private={room.is_private}, new_access_key={room.access_key}")
-
     db.session.commit()
     socketio.emit("room_list_updated")
 
