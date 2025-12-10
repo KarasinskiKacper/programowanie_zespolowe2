@@ -5,6 +5,16 @@ bp = Blueprint('chat_history', __name__, url_prefix='/api')
 
 @bp.route('/chat_history', methods=['GET'])
 def get_chat_history():
+    """!
+    Get the chat history of a room by its id.
+
+    @param room_id The id of the room to get the chat history for.
+
+    @return A list of chat history messages, each containing the message_id, room_id, user_name, message, and create_date of the message.
+
+    @exception 400 If the room_id parameter is missing.
+    @exception 404 If the room is not found.
+    """
     query = Chat_history.query
     
     if request.args.get('room_id'):
