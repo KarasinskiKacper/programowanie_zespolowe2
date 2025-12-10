@@ -69,5 +69,4 @@ if __name__ == '__main__':
     with app.app_context():
         initialize_room_users()
     socketio.start_background_task(start_activity_tracking)
-    # TODO disable debug mode for production
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000) # enable access from any IP
+    socketio.run(app, host=os.getenv('BACKEND_HOST'), port=os.getenv('BACKEND_PORT')) # enable access from any IP
