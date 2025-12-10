@@ -718,7 +718,7 @@ const LeftAside = ({
         size="small"
       />
       <div className="self-stretch flex-1 flex flex-col justify-start items-start gap-8">
-        <div className="self-stretch flex flex-col justify-start items-start gap-2">
+        <div className="self-stretch flex flex-col justify-start items-start gap-2 h-[calc(100vh-192px-128px-32px)] overflow-auto">
           <div className="justify-start text-[#6D66D2] text-xl font-bold font-['Inter']">
             Pokoje publiczne
           </div>
@@ -761,6 +761,7 @@ const LeftAside = ({
         <input
           type="text"
           placeholder="Szukaj..."
+          className="focus:outline-none focus:ring-0"
           onChange={(e) => {
             if (e.target.value === "") {
               payload.setShownRooms(payload.rooms);
@@ -802,8 +803,9 @@ const Workspace = ({
   if (workspace === "ROOM_CHAT")
     return (
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="self-stretch h-[calc(100vh-192px)] overflow-y-scroll" ref={containerRef}>
+        <div className="self-stretch h-[calc(100vh-192px)] overflow-y-scroll justify-end" ref={containerRef}>
           <div className="self-stretch flex-1 flex flex-col">
+            <div className="flex-1"></div>
             {messages.map((message, index) => (
               <Message
                 key={index}
@@ -831,7 +833,7 @@ const Workspace = ({
             <div className="self-stretch outline outline-2 outline-offset-[-2px] outline-[#6D66D2] inline-flex justify-between items-center overflow-hidden">
               <input
                 type="text"
-                className="flex-1 px-4 flex justify-center items-center gap-2.5 text-2xl"
+                className="flex-1 px-4 flex justify-center items-center gap-2.5 text-2xl focus:outline-none focus:ring-0"
                 placeholder={
                   payload.chosenRoom !== null ? "Napisz coś..." : "Dołącz do pokoju, aby pisać..."
                 }
@@ -892,24 +894,28 @@ const Workspace = ({
             setValue={payload.setCreateRoomName}
             error={payload.createRoomNameError}
           />
-          <TextInput
-            label="Klucz (dla pokoju prywatnego)"
-            placeholder="Wpisz klucz"
-            value={payload.createRoomPassword}
-            setValue={payload.setCreateRoomPassword}
-            disabled={!payload.createRoomIsPrivate}
-            error={payload.createRoomPasswordError}
-            isPassword
-          />
-          <TextInput
-            label="Powtórz klucz (dla pokoju prywatnego)"
-            placeholder="Powtórz klucz"
-            value={payload.createRoomConfirmPassword}
-            setValue={payload.setCreateRoomConfirmPassword}
-            disabled={!payload.createRoomIsPrivate}
-            error={payload.createRoomConfirmPasswordError}
-            isPassword
-          />
+          {payload.createRoomIsPrivate && (
+            <>
+            <TextInput
+              label="Klucz (dla pokoju prywatnego)"
+              placeholder="Wpisz klucz"
+              value={payload.createRoomPassword}
+              setValue={payload.setCreateRoomPassword}
+              disabled={!payload.createRoomIsPrivate}
+              error={payload.createRoomPasswordError}
+              isPassword
+            />
+            <TextInput
+              label="Powtórz klucz (dla pokoju prywatnego)"
+              placeholder="Powtórz klucz"
+              value={payload.createRoomConfirmPassword}
+              setValue={payload.setCreateRoomConfirmPassword}
+              disabled={!payload.createRoomIsPrivate}
+              error={payload.createRoomConfirmPasswordError}
+              isPassword
+            />
+            </>
+          )}
           <div>
             <input
               onChange={() => {
@@ -962,24 +968,27 @@ const Workspace = ({
             setValue={payload.setUpdateRoomName}
             error={payload.updateRoomNameError}
           />
-          <TextInput
-            label="Hasło"
-            placeholder="Wpisz hasło"
-            value={payload.updateRoomPassword}
-            setValue={payload.setUpdateRoomPassword}
-            disabled={!payload.updateRoomIsPrivate}
-            error={payload.updateRoomPasswordError}
-            isPassword
-          />
-          <TextInput
-            label="Powtórz hasło"
-            placeholder="Powtórz hasło"
-            value={payload.updateRoomConfirmPassword}
-            setValue={payload.setUpdateRoomConfirmPassword}
-            disabled={!payload.updateRoomIsPrivate}
-            error={payload.updateRoomConfirmPasswordError}
-            isPassword
-          />
+          {payload.updateRoomIsPrivate && (
+            <>
+              <TextInput
+                label="Hasło"
+                placeholder="Wpisz hasło"
+                value={payload.updateRoomPassword}
+                setValue={payload.setUpdateRoomPassword}
+                disabled={!payload.updateRoomIsPrivate}
+                error={payload.updateRoomPasswordError}
+                isPassword
+              />
+              <TextInput
+                label="Powtórz hasło"
+                placeholder="Powtórz hasło"
+                value={payload.updateRoomConfirmPassword}
+                setValue={payload.setUpdateRoomConfirmPassword}
+                disabled={!payload.updateRoomIsPrivate}
+                error={payload.updateRoomConfirmPasswordError}
+                isPassword
+              />
+          </>)}
           <div>
             <input
               type="checkbox"
@@ -1071,15 +1080,12 @@ const RightAside = ({
 
                     {member.username}
                   </div>
-                  <div className="h-8 w-4 items-center">
-                    {member.leaveable && (
-                      <div
-                        className="h-1 w-4 bg-[#ACD266] rounded-full"
-                        onClick={async () => {
+                  <div className="h-8 w-4 items-center cursor-pointer" onClick={async () => {
                           await leaveRoom(payload.chosenRoom, payload.accessToken);
                           location.reload();
-                        }}
-                      ></div>
+                        }}>
+                    {member.leaveable && (
+                      <div className="h-1 w-4 bg-[#ACD266] rounded-full"></div>
                     )}
                     {member.kickable && (
                       <div

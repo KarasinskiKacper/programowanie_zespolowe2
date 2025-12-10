@@ -88,7 +88,7 @@ export default function RootLayout({
     setUserRooms(resultUserRooms);
   };
 
-  useEffect(() => { 
+  useEffect(() => {  
     fetchRoomListData();
   }, [accessToken]);
 
