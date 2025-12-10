@@ -34,12 +34,6 @@ export const RoomsProvider = ({ children }: { children: ReactNode }) => {
   const [userRooms, setUserRooms] = useState<Object[]>([]);
   const [isReFetchNeeded, setIsReFetchNeeded] = useState<boolean>(false);
 
-  // console.log("🔄 RoomsProvider render, chosenRoom:", chosenRoom);
-
-  useEffect(() => {
-    // console.log("🎯 chosenRoom changed:", chosenRoom);
-  }, [chosenRoom]);
-
   return (
     <RoomsContext.Provider
       value={{

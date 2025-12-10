@@ -13,6 +13,10 @@ import { getPublicRooms, getUserRooms } from "../../auth/lib";
 
 import jwt from "jsonwebtoken";
 
+/**
+ * Deletes the access token cookie.
+ * @returns {Promise<void>} A promise that resolves when the access token cookie has been deleted.
+ */
 const logout = async () => {
   await deleteCookie("access_token");
 };
@@ -37,6 +41,13 @@ export default function RootLayout({
     isReFetchNeeded,
     setIsReFetchNeeded,
   } = useRooms();
+  
+/**
+ * Retrieves a list of all public rooms available in the application and a list of all rooms the user is currently in.
+ * If the user is not logged in, redirects them to the login page.
+ * Sets the state of the rooms and user rooms in the RoomContext.
+ * @returns {Promise<void>} A promise that resolves when the rooms data has been fetched and set in the RoomContext.
+ */
   const fetchRoomListData = async () => {
     const cookie = await getCookie("access_token");
     if (!cookie) {

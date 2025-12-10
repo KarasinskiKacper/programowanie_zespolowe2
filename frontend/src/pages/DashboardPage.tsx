@@ -28,6 +28,11 @@ import {
 } from "../auth/lib";
 import jwt from "jsonwebtoken";
 
+/**
+ * Retrieves a list of all chat messages in a given room.
+ * @param {number} roomId The ID of the room to retrieve the chat messages from.
+ * @returns {Promise<Array<Object>>} A promise that resolves to an array of objects, each containing information about a chat message.
+ */
 const fetchChatMessages = async (roomId: number) => {
   const fetchedChatMessages = await getChatMessages(roomId);
   return fetchedChatMessages;
@@ -90,16 +95,14 @@ export default function Page() {
 
   const [activeUsers, setActiveUsers] = useState([]);
 
+/**
+ * Joins a private room.
+ * @returns {Promise<boolean>} A promise that resolves to true if the join room request was successful, false otherwise.
+ */
   const sendJoinRoomRequest = async () => {
     console.log("sendJoinRoomRequest1");
 
     let isProperData = true;
-    // if (joinRoomName === "") {
-    //   setJoinRoomNameError("Podaj nazwę pokoju");
-    //   isProperData = false;
-    // } else {
-    //   setJoinRoomNameError("");
-    // }
     if (joinRoomPassword === "") {
       setJoinRoomPasswordError("Podaj klucz");
       isProperData = false;
@@ -130,6 +133,9 @@ export default function Page() {
     }
   };
 
+/**
+ * Retrieves a list of all public rooms available in the application and a list of all rooms the user is currently in.
+ */
   const fetchRoomListData = async () => {
     const cookie = await getCookie("access_token");
     if (!cookie) {
@@ -172,6 +178,15 @@ export default function Page() {
     setUserRooms(resultUserRooms);
   };
 
+/**
+ * Updates a room with the given properties.
+ * If the user is not logged in, redirects them to the login page.
+ * If the room name is empty, sets an error message.
+ * If the room password or confirm password is empty and the room is private, sets an error message.
+ * If the room password and confirm password do not match and the room is private, sets an error message.
+ * If the chosen room is null or undefined, returns false.
+ * @returns {Promise<boolean>} A promise that resolves to true if the update room request was successful, false otherwise.
+ */
   const sendUpdateRoomRequest = async () => {
     let isProperData = true;
     if (updateRoomName === "") {
@@ -226,6 +241,15 @@ export default function Page() {
     }
   };
 
+/**
+ * Creates a room with the given properties.
+ * If the user is not logged in, redirects them to the login page.
+ * If the room name is empty, sets an error message.
+ * If the room password or confirm password is empty and the room is private, sets an error message.
+ * If the room password and confirm password do not match and the room is private, sets an error message.
+ * If the room creation request was successful, returns true, false otherwise.
+ * @returns {Promise<boolean>} A promise that resolves to true if the room creation request was successful, false otherwise.
+ */
   const sendCreateRoomRequest = async () => {
     let isProperData = true;
     if (createRoomName === "") {
@@ -276,6 +300,11 @@ export default function Page() {
     }
   };
 
+/**
+ * Retrieves the access token cookie and sets it in the state if found.
+ * If the cookie is not found, redirects the user to the login page.
+ * @returns {Promise<string | undefined>} A promise that resolves to the access token cookie if found, or undefined if not found.
+ */
   const fetchCookie = async () => {
     const cookie = await getCookie("access_token");
     if (!cookie) {
@@ -286,12 +315,18 @@ export default function Page() {
     }
   };
 
+/**
+ * Retrieves the chat messages of the chosen room and sets them in the state.
+ * If the chosen room is null or undefined, does nothing.
+ * @returns {Promise<void>} A promise that resolves when the messages have been fetched and set in the state.
+ */
   const fetchMessages = async () => {
     if (chosenRoom !== null && chosenRoom !== undefined) {
       const fetchedMessages = await fetchChatMessages(chosenRoom);
       let resultMessages: Object[] = [];
       fetchedMessages.forEach((fetchedMessage) => {
         const dateTime = new Date(fetchedMessage.create_date);
+        dateTime.setHours(dateTime.getHours() - 1);
         const formattedDate = new Intl.DateTimeFormat("pl-PL", {
           year: "numeric",
           month: "numeric",
@@ -315,6 +350,16 @@ export default function Page() {
     }
   };
 
+/**
+ * Retrieves the members of the chosen room and sets them in the state.
+ * If the chosen room is null or undefined, does nothing.
+ * For each member, the following information is retrieved and stored in the state:
+ *   - username: the username of the member
+ *   - kickable: whether the current user can kick the member from the room
+ *   - leaveable: whether the current user can leave the room
+ *   - isOwner: whether the current user is the owner of the room
+ * @returns {Promise<void>} A promise that resolves when the members have been fetched and set in the state.
+ */
   const fetchMembers = async () => {
     if (chosenRoom !== null && chosenRoom !== undefined) {
       const fetchedMembers = await getChatMembers(chosenRoom);
@@ -340,6 +385,12 @@ export default function Page() {
     }
   };
 
+/**
+ * Retrieves the data of the chosen room and sets it in the state.
+ * If the chosen room is null or undefined, does nothing.
+ * The data retrieved includes the chat messages of the room, the members of the room, and the active users in the room.
+ * @returns {Promise<void>} A promise that resolves when the room data has been fetched and set in the state.
+ */
   const fetchRoomData = async () => {
     await fetchMessages();
     await fetchMembers();
@@ -350,10 +401,17 @@ export default function Page() {
     }, 200);
   };
 
+/**
+ * Sets the is connected state to true when the socket is connected.
+ * This is a callback function for the socket.io 'connect' event.
+ */
   const onConnect = () => {
     setIsConnected(true);
   };
 
+/**
+ * Called when the socket is disconnected. Sets the is connected state to false.
+ */
   const onDisconnect = () => {
     console.log("onDisconnect");
 
@@ -361,6 +419,11 @@ export default function Page() {
     // setChosenRoom(null);
   };
 
+/**
+ * Emits a watchdog event to the server with the user's name.
+ * The event is emitted only when the user is connected and has a chosen room.
+ * The watchdog event is used by the server to update the user's last seen timestamp.
+ */
   function watchdog() {
     if (accessToken && chosenRoom) {
       const user_name = jwt.decode(accessToken).sub;
@@ -370,6 +433,13 @@ export default function Page() {
     }
   }
 
+/**
+ * Joins a public room with the given ID.
+ * If the room ID is different from the currently chosen room, it will first join the room and then leave the old room.
+ * If the currently chosen room is null, it will simply join the room.
+ * After joining the room, it will emit a 'join' event to the server with the room ID and the user's name.
+ * @param {number} room_id The ID of the public room to join.
+ */
   const joinRoom = async (room_id: number) => {
     const user_name = jwt.decode(accessToken).sub;
     if (chosenRoom !== room_id) {
@@ -387,6 +457,12 @@ export default function Page() {
     socket.emit("join", { room_id, user_name });
   };
 
+/**
+ * Sends a message to the currently chosen room.
+ * If the chosen room is null or the new message is empty, does nothing.
+ * Otherwise, it emits a 'message' event to the server with the room ID, the user's name, and the message.
+ * After sending the message, it resets the new message state to an empty string.
+ */
   const sendMessage = () => {
     if (chosenRoom === null || newMessage === "") return;
     const user_name = jwt.decode(accessToken).sub;
@@ -398,6 +474,10 @@ export default function Page() {
     setNewMessage("");
   };
 
+/**
+ * Updates the messages state with a new message fetched from the socket.io.
+ * @param {Object} fetchedMessage The message object fetched from the server, containing the user's name, the message, and the creation date.
+ */
   const onNewMessage = (fetchedMessage) => {
     const dateTime = new Date(fetchedMessage.create_date);
     const formattedDate = new Intl.DateTimeFormat("pl-PL", {
@@ -422,12 +502,11 @@ export default function Page() {
     ]);
   };
 
-  // const onUserJoin = (data) => {
-  //   console.log(`${data.user_name} dołączył do pokoju ${data.room_id}`);
-  // };
-  // const onUserLeft = (data) => {
-  //   console.log(`${data.user_name} opuścił pokój ${data.room_id}`);
-  // };
+/**
+ * Listens for user activity changes in the application and updates the state of active users.
+ * When a user activity change is detected, it fetches the list of online users and updates the state of active users after a 200ms delay.
+ * @param {Object} data The object containing information about the user whose activity changed, including their username.
+ */
   const onUserActivityChange = async (data) => {
     console.log(`${data.user_name} ActivityChange`);
     setTimeout(async () => {
@@ -437,21 +516,21 @@ export default function Page() {
     }, 200);
   };
 
-  const onError = (data) => {
-    console.log(`Error: ${data.message}`);
-  };
-
+/**
+ * Called when the user list is updated. Fetches the room data again to update the state with the new user list.
+ * The room data is fetched again to update the state of active users in the currently chosen room.
+ */
   const onUserListUpdated = () => {
-    console.log("onUserListUpdated");
-    console.log(rooms);
     fetchRoomData();
   };
 
+/**
+ * Called when the room list is updated. Fetches the room list data again to update the state with the new room list.
+ * The room list data is fetched again to update the state of public rooms and user rooms.
+ */
   const onRoomListUpdated = () => {
     console.log("onRoomListUpdated");
-    // setTimeout(() => {
     fetchRoomListData();
-    // }, 100);
   };
 
   useInterval(
@@ -461,12 +540,16 @@ export default function Page() {
     isConnected ? 1000 : null
   );
 
+/**
+ * Called when the user is kicked from a room.
+ * If the user who was kicked is the currently logged in user, reloads the page.
+ * Otherwise, fetches the room data again to update the state with the new user list.
+ * @param {Object} data The object containing information about the user who was kicked, including their username.
+ */
   const onUserKicked = (data) => {
-    console.log("onUserKicked", data);
     if (data.user_name === jwt.decode(accessToken).sub) {
       location.reload();
     } else {
-      // console.log(rooms);
       fetchRoomData();
     }
   };
@@ -478,9 +561,7 @@ export default function Page() {
   useEffect(() => {
     fetchCookie();
     if (chosenRoom !== null) {
-      // setTimeout(() => {
       fetchRoomData();
-      // }, 100);
     }
   }, [chosenRoom]);
 
@@ -489,20 +570,9 @@ export default function Page() {
     socket.on("new_message", onNewMessage);
     socket.on("disconnect", onDisconnect);
 
-    // response on join
-    // socket.on("user_joined", onUserJoin);
-
-    // // response on leave
-    // socket.on("user_left", onUserLeft);
-
-    // response on watchdog
     socket.on("user_online", onUserActivityChange);
     socket.on("user_offline", onUserActivityChange);
 
-    // response on API user_room table update
-
-    // response on error
-    socket.on("error", onError);
 
     socket.on("user_list_updated", onUserListUpdated);
     socket.on("room_list_updated", onRoomListUpdated);
@@ -516,13 +586,8 @@ export default function Page() {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("new_message", onNewMessage);
-
-      // socket.off("user_join", onUserJoin);
-      // socket.off("user_left", onUserLeft);
       socket.off("user_online", onUserActivityChange);
       socket.off("user_offline", onUserActivityChange);
-
-      socket.off("error", onError);
       socket.off("user_list_updated", onUserListUpdated);
       socket.off("room_list_updated", onRoomListUpdated);
       socket.off("user_kicked", onUserKicked);
@@ -531,12 +596,13 @@ export default function Page() {
 
   useEffect(() => {
     if (
-      (chosenRoom === null || chosenRoom === undefined) &&
+      !rooms.find((room) => room.id === chosenRoom)?.name &&
       (messages.length > 0 || members.length > 0)
     ) {
       location.reload();
     }
-  }, [chosenRoom]);
+    console.log(chosenRoom, messages.length, members.length);
+  }, [chosenRoom, rooms]);
 
   return (
     <div className="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden">
@@ -695,8 +761,6 @@ const LeftAside = ({
         <input
           type="text"
           placeholder="Szukaj..."
-          // value={payload.shownRoomsSearch}
-          // onChange={(e) => payload.setShownRoomsSearch(e.target.value)}
           onChange={(e) => {
             if (e.target.value === "") {
               payload.setShownRooms(payload.rooms);
@@ -791,13 +855,6 @@ const Workspace = ({
     return (
       <div className="flex-1 self-stretch  inline-flex flex-col justify-center items-center gap-8 overflow-hidden">
         <div className="p-16 bg-white  outline-4  outline-[#6D66D2] flex flex-col justify-start items-start gap-8">
-          {/* <TextInput
-            label="Nazwa pokoju"
-            placeholder="Wpisz nazwę pokoju"
-            value={payload.joinRoomName}
-            setValue={payload.setJoinRoomName}
-            error={payload.joinRoomNameError}
-          /> */}
           <TextInput
             label="Klucz"
             placeholder="Wpisz Klucz"
@@ -1028,13 +1085,6 @@ const RightAside = ({
                       <div
                         className="h-1 w-4 bg-[#ACD266] rounded-full"
                         onClick={async () => {
-                          // console.log(
-                          //   "kickUser",
-                          //   payload.chosenRoom,
-                          //   payload.accessToken,
-                          //   member.username
-                          // );
-
                           await kickUser(payload.chosenRoom, payload.accessToken, member.username);
                         }}
                       ></div>

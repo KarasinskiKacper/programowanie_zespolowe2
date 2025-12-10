@@ -22,6 +22,11 @@ export default function Page() {
   const [newPasswordError, setNewPasswordError] = useState("");
   const [confirmNewPasswordError, setConfirmNewPasswordError] = useState("");
 
+  /**
+   * Retrieves the access token cookie and sets it in the state if found.
+   * If the cookie is not found, redirects the user to the login page.
+   * @returns {Promise<string | undefined>} A promise that resolves to the access token cookie if found, or undefined if not found.
+   */
   const fetchCookie = async () => {
     const cookie = await getCookie("access_token");
     if (!cookie) {

@@ -41,7 +41,7 @@ export default function Page() {
         <div className="inline-flex flex-col justify-center items-center">
           <div className="inline-flex justify-center items-center gap-4">
             <div className="items-center text-indigo-500 text-6xl font-bold font-['Inter']">
-              {username}fdsafdsadfsa
+              {username}
             </div>
           </div>
           {/* <div className="justify-start text-neutral-400 text-4xl font-normal font-['Inter']">
